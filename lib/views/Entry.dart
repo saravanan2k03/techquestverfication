@@ -18,7 +18,7 @@ class Entry extends StatefulWidget {
 class _EntryState extends State<Entry> {
   List<dynamic> student = [];
   List<dynamic> Event = [];
-
+  String searchvalue = "";
   Future GetStudent() async {
     try {
       var result = await http.get(
@@ -154,12 +154,21 @@ class _EntryState extends State<Entry> {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Center(
                             child: TextFormField(
-                              // controller: searchtxt,
-                              // initialValue: searchvalue,
-                              onChanged: (value) {},
+                              initialValue: searchvalue,
+                              onChanged: (value) {
+                                setState(() {
+                                  searchvalue = value;
+                                });
+
+                                if (kDebugMode) {
+                                  print("search:$value");
+                                }
+                                if (kDebugMode) {
+                                  print(searchvalue);
+                                }
+                              },
                               cursorColor:
                                   const Color.fromARGB(255, 19, 21, 21),
-
                               decoration: const InputDecoration(
                                   border: InputBorder.none,
                                   prefixIcon: Icon(Icons.search_sharp),
@@ -176,7 +185,9 @@ class _EntryState extends State<Entry> {
                       width: MediaQuery.of(context).size.width * 0.15,
                       child: MaterialButton(
                         color: const Color.fromARGB(255, 77, 45, 111),
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {});
+                        },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
@@ -242,9 +253,19 @@ class _EntryState extends State<Entry> {
                 ),
                 child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: student.length,
+                    itemCount: student
+                        .where((element) => element['TeamName']
+                            .toString()
+                            .toLowerCase()
+                            .contains(searchvalue.toLowerCase()))
+                        .length,
                     itemBuilder: (context, index) {
-                      var stu = student[index];
+                      var stu = student
+                          .where((element) => element['TeamName']
+                              .toString()
+                              .toLowerCase()
+                              .contains(searchvalue.toLowerCase()))
+                          .toList()[index];
                       return Column(
                         children: [
                           SizedBox(
@@ -438,6 +459,8 @@ class _EntryState extends State<Entry> {
                                                   stu["MemberTwo"].toString(),
                                               TeamName:
                                                   stu["TeamName"].toString(),
+                                              verification: stu["verification"]
+                                                  .toString(),
                                             ),
                                           ),
                                         );

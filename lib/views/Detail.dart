@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/drawer.dart';
@@ -12,6 +13,7 @@ class Detail extends StatefulWidget {
   final TeamMemberone;
   final TeamMembertwo;
   final Screenshot;
+  final verification;
   final List<dynamic> EventList;
   const Detail({
     super.key,
@@ -23,6 +25,7 @@ class Detail extends StatefulWidget {
     this.TeamMemberone,
     this.TeamMembertwo,
     this.Screenshot,
+    this.verification,
   });
 
   @override
@@ -30,6 +33,24 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  Future Profile() async {
+    if (widget.verification == null || widget.verification == "") {
+      if (kDebugMode) {
+        print("null verification");
+      }
+    } else {
+      if (kDebugMode) {
+        print("not null verification");
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    Profile();
+    super.initState();
+  }
+
   bool profile = false;
   @override
   Widget build(BuildContext context) {
