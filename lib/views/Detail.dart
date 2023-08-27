@@ -1,9 +1,12 @@
 // ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
 
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/drawer.dart';
+import 'package:http/http.dart' as http;
+import 'Entry.dart';
 
 class Detail extends StatefulWidget {
   final TeamId;
@@ -33,12 +36,41 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  bool verification = false;
+  String url = "https://mzcet.in/techquest23/api/verify.php";
+
+  Future<void> sendPostRequest() async {
+    // Replace with your actual URL
+    final response = await http.post(
+      Uri.parse(url),
+      body: {
+        'id': widget.TeamId.toString(),
+      }, // Replace '1' with the actual techquest_id you want to update
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (kDebugMode) {
+        print('Success: ${data['success']}');
+      }
+    } else {
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    }
+  }
+
   Future Profile() async {
-    if (widget.verification == null || widget.verification == "") {
+    if (kDebugMode) {
+      print(widget.verification);
+    }
+    if (widget.verification == null || widget.verification == "null") {
+      verification = true;
       if (kDebugMode) {
         print("null verification");
       }
     } else {
+      verification = false;
       if (kDebugMode) {
         print("not null verification");
       }
@@ -135,8 +167,8 @@ class _DetailState extends State<Detail> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.only(left: 5),
-                                      child: profile
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: verification
                                           ? const Icon(
                                               Icons.not_interested_sharp,
                                               color: Colors.red,
@@ -567,7 +599,16 @@ class _DetailState extends State<Detail> {
                                                 Radius.circular(20.0))),
                                         color: const Color.fromARGB(
                                             255, 77, 45, 111),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          sendPostRequest().whenComplete(
+                                            () => Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const Entry()),
+                                            ),
+                                          );
+                                        },
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10, horizontal: 10),
