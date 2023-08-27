@@ -30,7 +30,7 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
-  bool profile = true;
+  bool profile = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -309,9 +309,9 @@ class _DetailState extends State<Detail> {
                                                       width: 3,
                                                       color: Color.fromARGB(
                                                           255,
-                                                          77,
-                                                          36,
-                                                          147)), //<-- SEE HERE
+                                                          11,
+                                                          8,
+                                                          16)), //<-- SEE HERE
                                                 ),
                                               ),
                                             ),
@@ -382,8 +382,7 @@ class _DetailState extends State<Detail> {
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                     width: 3,
-                                                    color: Color.fromARGB(
-                                                        255, 77, 36, 147),
+                                                    color: Colors.black,
                                                   ), //<-- SEE HERE
                                                 ),
                                               ),
@@ -455,11 +454,8 @@ class _DetailState extends State<Detail> {
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                       width: 3,
-                                                      color: Color.fromARGB(
-                                                          255,
-                                                          77,
-                                                          36,
-                                                          147)), //<-- SEE HERE
+                                                      color: Colors
+                                                          .black), //<-- SEE HERE
                                                 ),
                                               ),
                                             ),
@@ -472,7 +468,7 @@ class _DetailState extends State<Detail> {
                               ),
                             ),
                             SizedBox(
-                              // // color: Colors.red,
+                              // color: Colors.red,
                               width: MediaQuery.of(context).size.width * 0.55,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -522,6 +518,81 @@ class _DetailState extends State<Detail> {
                                               ],
                                             );
                                           }),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.05,
+                            ),
+                            SizedBox(
+                              // color: Colors.red,
+                              width: MediaQuery.of(context).size.width * 0.50,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.06,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.10,
+                                      child: MaterialButton(
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20.0))),
+                                        color: const Color.fromARGB(
+                                            255, 77, 45, 111),
+                                        onPressed: () {},
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
+                                          child: Text(
+                                            "VERIFY",
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: const Color.fromARGB(
+                                                  255, 255, 255, 255),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.01,
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.06,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.10,
+                                      child: MaterialButton(
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20.0))),
+                                        color: const Color.fromARGB(
+                                            255, 77, 45, 111),
+                                        onPressed: () {},
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
+                                          child: Text(
+                                            "SUBMIT",
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: const Color.fromARGB(
+                                                  255, 255, 255, 255),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     )
                                   ],
                                 ),
