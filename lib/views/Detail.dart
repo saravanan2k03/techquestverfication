@@ -99,8 +99,8 @@ class _DetailState extends State<Detail> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.10,
                                       child: Text(
@@ -133,8 +133,8 @@ class _DetailState extends State<Detail> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.10,
                                       child: Text(
@@ -146,8 +146,8 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.40,
                                       child: Padding(
@@ -173,8 +173,8 @@ class _DetailState extends State<Detail> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.10,
                                       child: Text(
@@ -186,14 +186,20 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        widget.TeamName,
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                          color: Colors.black,
+                                    SizedBox(
+                                      // // color: Colors.red,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.40,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          widget.TeamName,
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                            color: Colors.black,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -202,14 +208,14 @@ class _DetailState extends State<Detail> {
                               ),
                             ),
                             SizedBox(
-                              // color: Colors.red,
+                              // // color: Colors.red,
                               width: MediaQuery.of(context).size.width * 0.55,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.10,
                                       child: Text(
@@ -223,8 +229,8 @@ class _DetailState extends State<Detail> {
                                     ),
                                     // Note: Same code is applied for the TextFormField as well
 
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.20,
                                       child: Padding(
@@ -240,8 +246,8 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.20,
                                       child: Row(
@@ -285,8 +291,8 @@ class _DetailState extends State<Detail> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.10,
                                       child: Text(
@@ -298,8 +304,8 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.20,
                                       child: Padding(
@@ -315,8 +321,8 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.20,
                                       child: Row(
@@ -360,8 +366,8 @@ class _DetailState extends State<Detail> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.10,
                                       child: Text(
@@ -373,8 +379,8 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.20,
                                       child: Padding(
@@ -390,8 +396,8 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.20,
                                       child: Row(
@@ -430,14 +436,14 @@ class _DetailState extends State<Detail> {
                               ),
                             ),
                             SizedBox(
-                              // color: Colors.red,
+                              // // color: Colors.red,
                               width: MediaQuery.of(context).size.width * 0.55,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      color: Colors.red,
+                                    SizedBox(
+                                      // color: Colors.red,
                                       width: MediaQuery.of(context).size.width *
                                           0.10,
                                       child: Text(
