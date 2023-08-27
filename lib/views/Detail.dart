@@ -30,6 +30,7 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  bool profile = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,6 +94,43 @@ class _DetailState extends State<Detail> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      // color: Colors.red,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.10,
+                                      child: Text(
+                                        "PROFILE:",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 5),
+                                      child: profile
+                                          ? const Icon(
+                                              Icons.not_interested_sharp,
+                                              color: Colors.red,
+                                              size: 30.0,
+                                            )
+                                          : const Icon(
+                                              Icons.verified_sharp,
+                                              color: Colors.green,
+                                              size: 30.0,
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               width: MediaQuery.of(context).size.width * 0.55,
                               child: Padding(
@@ -271,9 +309,9 @@ class _DetailState extends State<Detail> {
                                                       width: 3,
                                                       color: Color.fromARGB(
                                                           255,
-                                                          0,
-                                                          8,
-                                                          4)), //<-- SEE HERE
+                                                          77,
+                                                          36,
+                                                          147)), //<-- SEE HERE
                                                 ),
                                               ),
                                             ),
@@ -343,12 +381,10 @@ class _DetailState extends State<Detail> {
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                      width: 3,
-                                                      color: Color.fromARGB(
-                                                          255,
-                                                          0,
-                                                          8,
-                                                          4)), //<-- SEE HERE
+                                                    width: 3,
+                                                    color: Color.fromARGB(
+                                                        255, 77, 36, 147),
+                                                  ), //<-- SEE HERE
                                                 ),
                                               ),
                                             ),
@@ -421,9 +457,9 @@ class _DetailState extends State<Detail> {
                                                       width: 3,
                                                       color: Color.fromARGB(
                                                           255,
-                                                          0,
-                                                          8,
-                                                          4)), //<-- SEE HERE
+                                                          77,
+                                                          36,
+                                                          147)), //<-- SEE HERE
                                                 ),
                                               ),
                                             ),
@@ -455,8 +491,8 @@ class _DetailState extends State<Detail> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.blue,
+                                    SizedBox(
+                                      // color: Colors.blue,
                                       width: MediaQuery.of(context).size.width *
                                           0.40,
                                       height:
@@ -493,7 +529,7 @@ class _DetailState extends State<Detail> {
                             ),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

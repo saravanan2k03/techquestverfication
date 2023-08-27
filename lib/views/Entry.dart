@@ -59,22 +59,37 @@ class _EntryState extends State<Entry> {
     Event = [];
 
     if (KnowlegdeBowl == "null" || KnowlegdeBowl == null) {
+      if (kDebugMode) {
+        print("object is null");
+      }
     } else {
       Event.add(KnowlegdeBowl);
     }
     if (Quizardry == "null" || Quizardry == null) {
+      if (kDebugMode) {
+        print("object is null");
+      }
     } else {
       Event.add(Quizardry);
     }
     if (Techvein == "null" || Techvein == null) {
+      if (kDebugMode) {
+        print("object is null");
+      }
     } else {
       Event.add(Techvein);
     }
     if (designUp == "null" || designUp == null) {
+      if (kDebugMode) {
+        print("object is null");
+      }
     } else {
       Event.add(designUp);
     }
     if (CodeLog == "null" || CodeLog == null) {
+      if (kDebugMode) {
+        print("object is null");
+      }
     } else {
       Event.add(CodeLog);
     }
