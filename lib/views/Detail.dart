@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:techquest/views/HomeScreen.dart';
 import '../widgets/drawer.dart';
 import 'package:http/http.dart' as http;
-import 'Entry.dart';
 
 class Detail extends StatefulWidget {
   final TeamId;
@@ -605,7 +605,7 @@ class _DetailState extends State<Detail> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const Entry()),
+                                                      const HomeScreen()),
                                             ),
                                           );
                                         },
