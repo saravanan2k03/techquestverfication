@@ -39,6 +39,55 @@ class _DetailState extends State<Detail> {
   bool verification = false;
   String url = "https://mzcet.in/techquest23/api/verify.php";
 
+  Future<void> customshowAlertDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          title: Text(
+            'VERIFY',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: const Color.fromARGB(255, 77, 45, 111),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  'Please Make sure that profile Can Be Verified',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Yes',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> sendPostRequest() async {
     // Replace with your actual URL
     final response = await http.post(
@@ -640,7 +689,9 @@ class _DetailState extends State<Detail> {
                                                 Radius.circular(20.0))),
                                         color: const Color.fromARGB(
                                             255, 77, 45, 111),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          customshowAlertDialog();
+                                        },
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10, horizontal: 10),
