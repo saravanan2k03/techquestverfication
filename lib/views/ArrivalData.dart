@@ -312,7 +312,7 @@ class _ArrivalDataState extends State<ArrivalData> {
   }
 
   Widget buildDataTable() {
-    final columns = ['ID', 'TEAM NAME', 'STUDENT', 'EVENT'];
+    final columns = ['ID', 'TEAM NAME', 'STUDENT', 'EVENT', 'PARTICIPATE'];
 
     return FutureBuilder<List<arrival>>(
       future: studentsFuture, // Use the future containing your data
@@ -340,6 +340,8 @@ class _ArrivalDataState extends State<ArrivalData> {
               ));
         } else {
           return DataTable(
+            // dataRowColor:
+            //     MaterialStateColor.resolveWith((states) => Colors.lightGreen),
             columns: getColumns(columns),
             rows: getRows(snapshot.data!
                 .where((element) => element.teamName
@@ -366,15 +368,20 @@ class _ArrivalDataState extends State<ArrivalData> {
           user.techquestId,
           user.teamName,
           user.member,
-          user.events
+          user.events,
+          user.participate
         ];
-
+        Color cellColor = user.participate!.toLowerCase() == 'no'
+            ? Colors.red // Change this to the desired color
+            : Colors.black;
         return DataRow(
           cells: Utils.modelBuilder(cells, (index, cell) {
-            final showEditIcon = index == 3;
-
+            final showEditIcon = index == 4;
             return DataCell(
-              Text('$cell'),
+              Text(
+                '$cell',
+                style: TextStyle(color: cellColor),
+              ),
               showEditIcon: showEditIcon,
               onTap: () {},
             );
