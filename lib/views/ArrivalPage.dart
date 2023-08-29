@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:techquest/views/ArrivalData.dart';
+
+import '../widgets/drawer.dart';
 
 class ArrivalPage extends StatefulWidget {
   const ArrivalPage({super.key});
@@ -11,8 +14,11 @@ class _ArrivalPageState extends State<ArrivalPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Column(
-        children: [],
+      body: Row(
+        children: [
+          DrawerPage(),
+          ArrivalData(),
+        ],
       ),
     );
   }
