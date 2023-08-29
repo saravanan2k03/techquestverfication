@@ -38,55 +38,9 @@ class Detail extends StatefulWidget {
 class _DetailState extends State<Detail> {
   bool verification = false;
   String url = "https://mzcet.in/techquest23/api/verify.php";
-
-  Future<void> customshowAlertDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          // <-- SEE HERE
-          title: Text(
-            'VERIFY',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: const Color.fromARGB(255, 77, 45, 111),
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                  'Please Make sure that profile Can Be Verified',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Yes',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: Colors.black,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  String arrival = "https://mzcet.in/techquest23/api/arrival.php";
+  List<String> student = [];
+  List<String> EventList = [];
 
   Future<void> sendPostRequest() async {
     // Replace with your actual URL
@@ -103,10 +57,136 @@ class _DetailState extends State<Detail> {
         print('Success: ${data['success']}');
       }
     } else {
+      customshowAlertDialog(
+          'Error', 'Request failed with status:${response.statusCode}');
       if (kDebugMode) {
         print('Request failed with status: ${response.statusCode}');
       }
     }
+  }
+
+  Future<void> SubmitRequest() async {
+    // Convert the EventList into a comma-separated string
+    String eventsString = EventList.join(',');
+    final response = await http.post(
+      Uri.parse(arrival),
+      body: {
+        'student': student.join(','),
+        'events': eventsString,
+        'TeamName': widget.TeamName,
+        'id': widget.TeamId.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (kDebugMode) {
+        print('Success: ${data['success']}');
+      }
+      if (data['success'] == false) {
+        customshowAlertDialog('Error', 'Student Has Been Already Added ');
+      } else {
+        customshowAlertDialog('success', 'Student Has Been Added Successfully');
+      }
+    } else {
+      customshowAlertDialog(
+          'Error', 'Request failed with status:${response.statusCode}');
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    }
+  }
+
+  AddStudentList() {
+    student = [];
+    EventList = [];
+    for (var element in widget.EventList) {
+      EventList.add(element);
+    }
+    if (widget.TeamLeader != "") {
+      student.add(widget.TeamLeader);
+      if (kDebugMode) {
+        print("TeamLeader Not Empty");
+      }
+    } else {
+      if (kDebugMode) {
+        print("TeamLeader empty");
+      }
+    }
+    if (widget.TeamMemberone != "") {
+      student.add(widget.TeamMemberone);
+
+      if (kDebugMode) {
+        print("TeamMemberone Not Empty");
+      }
+    } else {
+      if (kDebugMode) {
+        print("TeamMemberone empty");
+      }
+    }
+    if (widget.TeamMembertwo != "") {
+      student.add(widget.TeamMembertwo);
+      if (kDebugMode) {
+        print("Not Empty");
+      }
+    } else {
+      if (kDebugMode) {
+        print("TeamMembertwo empty");
+      }
+    }
+    if (kDebugMode) {
+      print("student:$student");
+      print("Event:${widget.EventList}");
+    }
+  }
+
+  Future<void> customshowAlertDialog(String tittle, String content) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          title: Text(
+            tittle,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: const Color.fromARGB(255, 77, 45, 111),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  content,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future Profile() async {
@@ -129,6 +209,7 @@ class _DetailState extends State<Detail> {
   @override
   void initState() {
     Profile();
+    AddStudentList();
     super.initState();
   }
 
@@ -690,7 +771,13 @@ class _DetailState extends State<Detail> {
                                         color: const Color.fromARGB(
                                             255, 77, 45, 111),
                                         onPressed: () {
-                                          customshowAlertDialog();
+                                          if (widget.verification == null ||
+                                              widget.verification == "null") {
+                                            customshowAlertDialog('VERIFY',
+                                                'Please Make sure that profile Can Be Verified');
+                                          } else {
+                                            SubmitRequest();
+                                          }
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
