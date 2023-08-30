@@ -57,6 +57,83 @@ class _ArrivalDataState extends State<ArrivalData> {
     }
   }
 
+  Future<List<arrival>> GetEvent() async {
+    try {
+      final result = await http.post(
+        Uri.parse('https://mzcet.in/techquest23/api/arrivalreturnwhere.php'),
+        body: {
+          'Event': 'KnowlegdeBowl',
+        },
+      );
+      if (result.statusCode == 200) {
+        List<dynamic> student = jsonDecode(result.body);
+        List<arrival> students =
+            student.map((stu) => arrival.fromJson(stu)).toList();
+
+        return students;
+      } else {
+        if (kDebugMode) {
+          print("Error");
+        }
+        throw Exception('Failed to load data');
+      }
+    } catch (ex) {
+      if (kDebugMode) {
+        print(ex.toString());
+      }
+      throw Exception('Failed to load data');
+    }
+  }
+
+  Future<void> customshowAlertDialog(String tittle, String content) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          title: Text(
+            tittle,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: const Color.fromARGB(255, 77, 45, 111),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  content,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -65,7 +142,8 @@ class _ArrivalDataState extends State<ArrivalData> {
 
   Apicall() {
     setState(() {
-      studentsFuture = initializeData();
+      // studentsFuture = initializeData();
+      studentsFuture = GetEvent();
     });
   }
 
