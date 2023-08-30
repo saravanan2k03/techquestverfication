@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techquest/views/ArrivalScreen.dart';
+import 'package:techquest/views/MarkScreen.dart';
 
 import '../views/HomeScreen.dart';
 
@@ -117,7 +118,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const ArrivalPage(),
+                      builder: (context) => const MarkPage(),
                     ),
                   );
                 },

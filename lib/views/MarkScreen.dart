@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techquest/views/MarkData.dart';
 
 import '../widgets/drawer.dart';
 
@@ -16,6 +17,7 @@ class _MarkPageState extends State<MarkPage> {
       body: Row(
         children: [
           DrawerPage(),
+          MarkData(),
         ],
       ),
     );
