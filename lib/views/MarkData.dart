@@ -1,12 +1,11 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:techquest/widgets/EditParticipate.dart';
 import '../models/studentmark.dart';
 import '../widgets/utils.dart';
 
@@ -128,71 +127,29 @@ class _MarkDataState extends State<MarkData> {
     );
   }
 
-  Future<void> cutomdia(String tittle, String content, String id) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          // <-- SEE HERE
-          title: Text(
-            tittle,
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: const Color.fromARGB(255, 77, 45, 111),
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                  content,
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'OK',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: Colors.black,
-                ),
-              ),
-              onPressed: () {
-                // sendPostRequest(id).whenComplete(() {
-                //   Navigator.of(context).pop();
-                //   setState(() {
-                //     Apicall();
-                //   });
-                // });
-              },
-            ),
-            TextButton(
-              child: Text(
-                'CANCEL',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: Colors.black,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+  Future<void> sendPostRequest(String id, String Mark, String event) async {
+    // Replace with your actual URL
+    final response = await http.post(
+      Uri.parse('https://mzcet.in/techquest23/api/Entermark'),
+      body: {
+        'id': id,
+        'Mark': Mark,
+        'event': event
+      }, // Replace '1' with the actual techquest_id you want to update
     );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (kDebugMode) {
+        print('Success: ${data['success']}');
+      }
+    } else {
+      customshowAlertDialog(
+          'Error', 'Request failed with status:${response.statusCode}');
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    }
   }
 
   @override
@@ -331,7 +288,7 @@ class _MarkDataState extends State<MarkData> {
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         dropdownvalue = newValue!;
-                                        // Apicall();
+                                        Apicall();
                                       });
                                     },
                                   ),
@@ -427,7 +384,7 @@ class _MarkDataState extends State<MarkData> {
                         // color: Colors.red,
                         height: MediaQuery.of(context).size.height * .70,
                         width: MediaQuery.of(context).size.width * 0.80,
-                        child: SingleChildScrollView(child: Container()),
+                        child: SingleChildScrollView(child: buildDataTable()),
                       ),
                     ),
                   ],
@@ -442,10 +399,10 @@ class _MarkDataState extends State<MarkData> {
 
   Widget buildDataTable() {
     final columns = [
-      // 'ID',
       'TEAM ID',
       'TEAM NAME',
       'EVENT',
+      'MARK',
     ];
 
     return FutureBuilder<List<StudentMark>>(
@@ -504,18 +461,19 @@ class _MarkDataState extends State<MarkData> {
           user.techquestId,
           user.teamName,
           user.events,
+          user.mark,
         ];
-        // Color cellColor = user.participate!.toLowerCase() == 'no'
-        //     ? Colors.red // Change this to the desired color
-        //     : const Color.fromARGB(255, 10, 40, 141);
+        Color cellColor = user.mark.toString().toLowerCase() == '0'
+            ? Colors.red // Change this to the desired color
+            : const Color.fromARGB(255, 10, 40, 141);
         return DataRow(
           cells: Utils.modelBuilder(cells, (index, cell) {
-            final showEditIcon = index == 4;
+            final showEditIcon = index == 3;
             return DataCell(
               Text(
                 '$cell',
-                style: const TextStyle(
-                  color: Colors.black,
+                style: TextStyle(
+                  color: cellColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -523,7 +481,7 @@ class _MarkDataState extends State<MarkData> {
               showEditIcon: showEditIcon,
               onTap: () {
                 switch (index) {
-                  case 4:
+                  case 3:
                     editParticipate(user);
                     break;
                 }
@@ -534,7 +492,14 @@ class _MarkDataState extends State<MarkData> {
       }).toList();
 
   editParticipate(StudentMark editUser) async {
-    // cutomdia(
-    //     'Allow Participants', 'Do You Want To Allow ', editUser.id.toString());
+    await showTextDialog(context,
+            title: 'Enter The Mark', value: editUser.mark.toString())
+        .then((value) {
+      if (kDebugMode) {
+        print(value);
+      }
+      sendPostRequest(
+          editUser.techquestId.toString(), value, editUser.events.toString());
+    });
   }
 }
