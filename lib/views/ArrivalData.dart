@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:techquest/models/arrival.dart';
-
+import '../widgets/EditParticipate.dart';
 import '../widgets/utils.dart';
 
 class ArrivalData extends StatefulWidget {
@@ -267,7 +267,8 @@ class _ArrivalDataState extends State<ArrivalData> {
                           child: SizedBox(
                               width: MediaQuery.of(context).size.width,
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.only(
+                                    left: 12, top: 8.0, bottom: 8.0),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     value: dropdownvalue,
@@ -392,7 +393,14 @@ class _ArrivalDataState extends State<ArrivalData> {
   }
 
   Widget buildDataTable() {
-    final columns = ['ID', 'TEAM NAME', 'STUDENT', 'EVENT', 'PARTICIPATE'];
+    final columns = [
+      'ID',
+      'TEAM ID',
+      'TEAM NAME',
+      'STUDENT',
+      'EVENT',
+      'PARTICIPATE'
+    ];
 
     return FutureBuilder<List<arrival>>(
       future: studentsFuture, // Use the future containing your data
@@ -445,6 +453,7 @@ class _ArrivalDataState extends State<ArrivalData> {
 
   List<DataRow> getRows(List<arrival> users) => users.map((arrival user) {
         final cells = [
+          user.id,
           user.techquestId,
           user.teamName,
           user.member,
@@ -456,16 +465,30 @@ class _ArrivalDataState extends State<ArrivalData> {
             : Colors.black;
         return DataRow(
           cells: Utils.modelBuilder(cells, (index, cell) {
-            final showEditIcon = index == 4;
+            final showEditIcon = index == 5;
             return DataCell(
               Text(
                 '$cell',
                 style: TextStyle(color: cellColor),
               ),
               showEditIcon: showEditIcon,
-              onTap: () {},
+              onTap: () {
+                switch (index) {
+                  case 5:
+                    editParticipate(user);
+                    break;
+                }
+              },
             );
           }),
         );
       }).toList();
+
+  editParticipate(arrival editUser) async {
+    final Participate = await showTextDialog(
+      context,
+      title: 'Allow participants',
+      value: editUser.participate.toString(),
+    );
+  }
 }
