@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:techquest/models/arrival.dart';
-import '../widgets/EditParticipate.dart';
 import '../widgets/utils.dart';
 
 class ArrivalData extends StatefulWidget {
@@ -19,8 +18,7 @@ class ArrivalData extends StatefulWidget {
 
 class _ArrivalDataState extends State<ArrivalData> {
   late Future<List<arrival>> studentsFuture;
-  late Future<List<arrival>> studentsFuturer;
-
+  String url = "https://mzcet.in/techquest23/api/Allow.php";
   String searchvalue = "";
   String dropdownvalue = 'Choose Event';
   var items = [
@@ -81,6 +79,29 @@ class _ArrivalDataState extends State<ArrivalData> {
     }
   }
 
+  Future<void> sendPostRequest(String id) async {
+    // Replace with your actual URL
+    final response = await http.post(
+      Uri.parse('https://mzcet.in/techquest23/api/Allow.php'),
+      body: {
+        'id': id,
+      }, // Replace '1' with the actual techquest_id you want to update
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (kDebugMode) {
+        print('Success: ${data['success']}');
+      }
+    } else {
+      customshowAlertDialog(
+          'Error', 'Request failed with status:${response.statusCode}');
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    }
+  }
+
   Future<void> customshowAlertDialog(String tittle, String content) async {
     return showDialog<void>(
       context: context,
@@ -114,6 +135,73 @@ class _ArrivalDataState extends State<ArrivalData> {
             TextButton(
               child: Text(
                 'OK',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> cutomdia(String tittle, String content, String id) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          title: Text(
+            tittle,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: const Color.fromARGB(255, 77, 45, 111),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  content,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                sendPostRequest(id).whenComplete(() {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    Apicall();
+                  });
+                });
+              },
+            ),
+            TextButton(
+              child: Text(
+                'CANCEL',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -175,7 +263,7 @@ class _ArrivalDataState extends State<ArrivalData> {
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 30),
               child: Container(
-                height: MediaQuery.of(context).size.height * .15,
+                height: MediaQuery.of(context).size.height * .17,
                 width: MediaQuery.of(context).size.width * 0.80,
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(255, 255, 255, 255),
@@ -394,7 +482,7 @@ class _ArrivalDataState extends State<ArrivalData> {
 
   Widget buildDataTable() {
     final columns = [
-      'ID',
+      // 'ID',
       'TEAM ID',
       'TEAM NAME',
       'STUDENT',
@@ -453,7 +541,7 @@ class _ArrivalDataState extends State<ArrivalData> {
 
   List<DataRow> getRows(List<arrival> users) => users.map((arrival user) {
         final cells = [
-          user.id,
+          // user.id,
           user.techquestId,
           user.teamName,
           user.member,
@@ -462,19 +550,23 @@ class _ArrivalDataState extends State<ArrivalData> {
         ];
         Color cellColor = user.participate!.toLowerCase() == 'no'
             ? Colors.red // Change this to the desired color
-            : Colors.black;
+            : const Color.fromARGB(255, 10, 40, 141);
         return DataRow(
           cells: Utils.modelBuilder(cells, (index, cell) {
-            final showEditIcon = index == 5;
+            final showEditIcon = index == 4;
             return DataCell(
               Text(
                 '$cell',
-                style: TextStyle(color: cellColor),
+                style: TextStyle(
+                  color: cellColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
               showEditIcon: showEditIcon,
               onTap: () {
                 switch (index) {
-                  case 5:
+                  case 4:
                     editParticipate(user);
                     break;
                 }
@@ -485,10 +577,7 @@ class _ArrivalDataState extends State<ArrivalData> {
       }).toList();
 
   editParticipate(arrival editUser) async {
-    final Participate = await showTextDialog(
-      context,
-      title: 'Allow participants',
-      value: editUser.participate.toString(),
-    );
+    cutomdia(
+        'Allow Participants', 'Do You Want To Allow ', editUser.id.toString());
   }
 }
