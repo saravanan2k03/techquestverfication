@@ -19,6 +19,8 @@ class ArrivalData extends StatefulWidget {
 
 class _ArrivalDataState extends State<ArrivalData> {
   late Future<List<arrival>> studentsFuture;
+  late Future<List<arrival>> studentsFuturer;
+
   String searchvalue = "";
   String dropdownvalue = 'Choose Event';
   var items = [
@@ -57,29 +59,23 @@ class _ArrivalDataState extends State<ArrivalData> {
     }
   }
 
-  Future<List<arrival>> GetEvent() async {
-    try {
-      final result = await http.post(
-        Uri.parse('https://mzcet.in/techquest23/api/arrivalreturnwhere.php'),
-        body: {
-          'Event': 'KnowlegdeBowl',
-        },
-      );
-      if (result.statusCode == 200) {
-        List<dynamic> student = jsonDecode(result.body);
-        List<arrival> students =
-            student.map((stu) => arrival.fromJson(stu)).toList();
+  Future<List<arrival>> SubmitEvent() async {
+    final response = await http.post(
+      Uri.parse('https://mzcet.in/techquest23/api/arrivalreturnwhere.php'),
+      body: {
+        'Event': dropdownvalue.toString(),
+      },
+    );
 
-        return students;
-      } else {
-        if (kDebugMode) {
-          print("Error");
-        }
-        throw Exception('Failed to load data');
-      }
-    } catch (ex) {
+    if (response.statusCode == 200) {
+      List<dynamic> student = jsonDecode(response.body);
+      List<arrival> students =
+          student.map((stu) => arrival.fromJson(stu)).toList();
+
+      return students;
+    } else {
       if (kDebugMode) {
-        print(ex.toString());
+        print("Error");
       }
       throw Exception('Failed to load data');
     }
@@ -141,10 +137,15 @@ class _ArrivalDataState extends State<ArrivalData> {
   }
 
   Apicall() {
-    setState(() {
-      // studentsFuture = initializeData();
-      studentsFuture = GetEvent();
-    });
+    if (dropdownvalue == 'Choose Event') {
+      setState(() {
+        studentsFuture = initializeData();
+      });
+    } else {
+      setState(() {
+        studentsFuture = SubmitEvent();
+      });
+    }
   }
 
   Future<List<arrival>> initializeData() async {
@@ -281,6 +282,7 @@ class _ArrivalDataState extends State<ArrivalData> {
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         dropdownvalue = newValue!;
+                                        Apicall();
                                       });
                                     },
                                   ),
