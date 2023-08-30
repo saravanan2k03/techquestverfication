@@ -5,6 +5,7 @@ class arrival {
   String? member;
   String? events;
   String? participate;
+  String? mark;
 
   arrival(
       {this.id,
@@ -12,7 +13,8 @@ class arrival {
       this.teamName,
       this.member,
       this.events,
-      this.participate});
+      this.participate,
+      this.mark});
 
   arrival.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -21,6 +23,7 @@ class arrival {
     member = json['Member'];
     events = json['Events'];
     participate = json['Participate'];
+    mark = json['Mark'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +34,7 @@ class arrival {
     data['Member'] = member;
     data['Events'] = events;
     data['Participate'] = participate;
+    data['Mark'] = mark;
     return data;
   }
 }
