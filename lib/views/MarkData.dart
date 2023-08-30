@@ -1,6 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import '../models/arrival.dart';
 
 class MarkData extends StatefulWidget {
   const MarkData({super.key});
@@ -10,6 +16,7 @@ class MarkData extends StatefulWidget {
 }
 
 class _MarkDataState extends State<MarkData> {
+  late Future<List<arrival>> studentsFuture;
   String searchvalue = "";
   String dropdownvalue = 'Choose Event';
   var items = [
@@ -20,6 +27,83 @@ class _MarkDataState extends State<MarkData> {
     'Designup',
     'CodeLog',
   ];
+  Future<List<arrival>> GetStudent() async {
+    try {
+      var result = await http.get(
+        Uri.parse('https://mzcet.in/techquest23/api/studentmark.php'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (result.statusCode == 200) {
+        List<dynamic> student = jsonDecode(result.body);
+        List<arrival> students =
+            student.map((stu) => arrival.fromJson(stu)).toList();
+
+        return students;
+      } else {
+        if (kDebugMode) {
+          print("Error");
+        }
+        throw Exception('Failed to load data');
+      }
+    } catch (ex) {
+      if (kDebugMode) {
+        print(ex.toString());
+      }
+      throw Exception('Failed to load data');
+    }
+  }
+
+  Future<void> customshowAlertDialog(String tittle, String content) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          title: Text(
+            tittle,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: const Color.fromARGB(255, 77, 45, 111),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  content,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
