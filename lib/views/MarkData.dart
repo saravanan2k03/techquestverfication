@@ -6,7 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import '../models/arrival.dart';
+
+import '../models/studentmark.dart';
+import '../widgets/utils.dart';
 
 class MarkData extends StatefulWidget {
   const MarkData({super.key});
@@ -16,7 +18,7 @@ class MarkData extends StatefulWidget {
 }
 
 class _MarkDataState extends State<MarkData> {
-  late Future<List<arrival>> studentsFuture;
+  late Future<List<StudentMark>> studentsFuture;
   String searchvalue = "";
   String dropdownvalue = 'Choose Event';
   var items = [
@@ -27,7 +29,7 @@ class _MarkDataState extends State<MarkData> {
     'Designup',
     'CodeLog',
   ];
-  Future<List<arrival>> GetStudent() async {
+  Future<List<StudentMark>> GetStudent() async {
     try {
       var result = await http.get(
         Uri.parse('https://mzcet.in/techquest23/api/studentmark.php'),
@@ -37,8 +39,8 @@ class _MarkDataState extends State<MarkData> {
       );
       if (result.statusCode == 200) {
         List<dynamic> student = jsonDecode(result.body);
-        List<arrival> students =
-            student.map((stu) => arrival.fromJson(stu)).toList();
+        List<StudentMark> students =
+            student.map((stu) => StudentMark.fromJson(stu)).toList();
 
         return students;
       } else {
@@ -50,6 +52,28 @@ class _MarkDataState extends State<MarkData> {
     } catch (ex) {
       if (kDebugMode) {
         print(ex.toString());
+      }
+      throw Exception('Failed to load data');
+    }
+  }
+
+  Future<List<StudentMark>> SubmitEvent() async {
+    final response = await http.post(
+      Uri.parse('https://mzcet.in/techquest23/api/Eventby.php'),
+      body: {
+        'Event': dropdownvalue.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> student = jsonDecode(response.body);
+      List<StudentMark> students =
+          student.map((stu) => StudentMark.fromJson(stu)).toList();
+
+      return students;
+    } else {
+      if (kDebugMode) {
+        print("Error");
       }
       throw Exception('Failed to load data');
     }
@@ -102,6 +126,91 @@ class _MarkDataState extends State<MarkData> {
         );
       },
     );
+  }
+
+  Future<void> cutomdia(String tittle, String content, String id) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          title: Text(
+            tittle,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: const Color.fromARGB(255, 77, 45, 111),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  content,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                // sendPostRequest(id).whenComplete(() {
+                //   Navigator.of(context).pop();
+                //   setState(() {
+                //     Apicall();
+                //   });
+                // });
+              },
+            ),
+            TextButton(
+              child: Text(
+                'CANCEL',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Apicall();
+  }
+
+  Apicall() {
+    if (dropdownvalue == 'Choose Event') {
+      setState(() {
+        studentsFuture = GetStudent();
+      });
+    } else {
+      setState(() {
+        studentsFuture = SubmitEvent();
+      });
+    }
   }
 
   @override
@@ -329,5 +438,103 @@ class _MarkDataState extends State<MarkData> {
         ),
       ),
     );
+  }
+
+  Widget buildDataTable() {
+    final columns = [
+      // 'ID',
+      'TEAM ID',
+      'TEAM NAME',
+      'EVENT',
+    ];
+
+    return FutureBuilder<List<StudentMark>>(
+      future: studentsFuture, // Use the future containing your data
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(child: CircularProgressIndicator()),
+              ],
+            ),
+          ); // Show a loading indicator while data is loading
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox(
+              height: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('No data available.'),
+                ],
+              ));
+        } else {
+          return DataTable(
+            // dataRowColor:
+            //     MaterialStateColor.resolveWith((states) => Colors.lightGreen),
+            columns: getColumns(columns),
+            rows: getRows(snapshot.data!
+                .where((element) => element.teamName
+                    .toString()
+                    .toLowerCase()
+                    .contains(searchvalue.toLowerCase()))
+                .toList()), // Pass the fetched data to getRows
+          );
+        }
+      },
+    );
+  }
+
+  List<DataColumn> getColumns(List<String> columns) {
+    return columns.map((String column) {
+      return DataColumn(
+        label: Text(column),
+      );
+    }).toList();
+  }
+
+  List<DataRow> getRows(List<StudentMark> users) =>
+      users.map((StudentMark user) {
+        final cells = [
+          // user.id,
+          user.techquestId,
+          user.teamName,
+          user.events,
+        ];
+        // Color cellColor = user.participate!.toLowerCase() == 'no'
+        //     ? Colors.red // Change this to the desired color
+        //     : const Color.fromARGB(255, 10, 40, 141);
+        return DataRow(
+          cells: Utils.modelBuilder(cells, (index, cell) {
+            final showEditIcon = index == 4;
+            return DataCell(
+              Text(
+                '$cell',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              showEditIcon: showEditIcon,
+              onTap: () {
+                switch (index) {
+                  case 4:
+                    editParticipate(user);
+                    break;
+                }
+              },
+            );
+          }),
+        );
+      }).toList();
+
+  editParticipate(StudentMark editUser) async {
+    // cutomdia(
+    //     'Allow Participants', 'Do You Want To Allow ', editUser.id.toString());
   }
 }
