@@ -130,7 +130,7 @@ class _MarkDataState extends State<MarkData> {
   Future<void> sendPostRequest(String id, String Mark, String event) async {
     // Replace with your actual URL
     final response = await http.post(
-      Uri.parse('https://mzcet.in/techquest23/api/Entermark'),
+      Uri.parse('https://mzcet.in/techquest23/api/Entermark.php'),
       body: {
         'id': id,
         'Mark': Mark,
@@ -330,7 +330,7 @@ class _MarkDataState extends State<MarkData> {
                               color: const Color.fromARGB(255, 77, 45, 111),
                               onPressed: () {
                                 setState(() {
-                                  // Apicall();
+                                  Apicall();
                                 });
                               },
                               child: Padding(
@@ -498,8 +498,24 @@ class _MarkDataState extends State<MarkData> {
       if (kDebugMode) {
         print(value);
       }
-      sendPostRequest(
-          editUser.techquestId.toString(), value, editUser.events.toString());
+      if (value == "" || value.length == 0) {
+        value = "0";
+        sendPostRequest(editUser.techquestId.toString(), value,
+                editUser.events.toString())
+            .whenComplete(
+          () {
+            Apicall();
+          },
+        );
+      } else {
+        sendPostRequest(editUser.techquestId.toString(), value,
+                editUser.events.toString())
+            .whenComplete(
+          () {
+            Apicall();
+          },
+        );
+      }
     });
   }
 }
