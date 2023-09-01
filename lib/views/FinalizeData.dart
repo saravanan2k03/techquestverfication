@@ -80,28 +80,28 @@ class _FinalizeDataState extends State<FinalizeData> {
     }
   }
 
-  Future<void> sendPostRequest(String id) async {
-    // Replace with your actual URL
-    final response = await http.post(
-      Uri.parse('https://mzcet.in/techquest23/api/Allow.php'),
-      body: {
-        'id': id,
-      }, // Replace '1' with the actual techquest_id you want to update
-    );
+  // Future<void> sendPostRequest(String id) async {
+  //   // Replace with your actual URL
+  //   final response = await http.post(
+  //     Uri.parse('https://mzcet.in/techquest23/api/Allow.php'),
+  //     body: {
+  //       'id': id,
+  //     }, // Replace '1' with the actual techquest_id you want to update
+  //   );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (kDebugMode) {
-        print('Success: ${data['success']}');
-      }
-    } else {
-      customshowAlertDialog(
-          'Error', 'Request failed with status:${response.statusCode}');
-      if (kDebugMode) {
-        print('Request failed with status: ${response.statusCode}');
-      }
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     if (kDebugMode) {
+  //       print('Success: ${data['success']}');
+  //     }
+  //   } else {
+  //     customshowAlertDialog(
+  //         'Error', 'Request failed with status:${response.statusCode}');
+  //     if (kDebugMode) {
+  //       print('Request failed with status: ${response.statusCode}');
+  //     }
+  //   }
+  // }
 
   Future<void> customshowAlertDialog(String tittle, String content) async {
     return showDialog<void>(
@@ -192,13 +192,13 @@ class _FinalizeDataState extends State<FinalizeData> {
                 ),
               ),
               onPressed: () {
-                sendPostRequest(id).whenComplete(() {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    Apicall();
-                    GetStudent();
-                  });
-                });
+                // sendPostRequest(id).whenComplete(() {
+                //   Navigator.of(context).pop();
+                //   setState(() {
+                //     Apicall();
+                //     GetStudent();
+                //   });
+                // });
               },
             ),
             TextButton(
@@ -581,116 +581,5 @@ class _FinalizeDataState extends State<FinalizeData> {
         },
       ).toList();
 
-  teamcheck(
-    String id,
-    String event,
-  ) {
-    print(searchstudent
-        .where((element) =>
-            element['techquest_id'].toString().contains(id.toString()))
-        .toList()
-        .where((element) =>
-            element['Events'].toString().contains(event.toString()))
-        .toList()
-        .where((element) =>
-            element['Participate'].toString().toLowerCase().contains("yes"))
-        .toList());
-    return searchstudent
-        .where((element) =>
-            element['techquest_id'].toString().contains(id.toString()))
-        .toList()
-        .where((element) =>
-            element['Events'].toString().contains(event.toString()))
-        .toList()
-        .where((element) =>
-            element['Participate'].toString().toLowerCase().contains("yes"))
-        .toList()
-        .length
-        .toInt();
-  }
-
-  editParticipate(arrival editUser) async {
-    if (kDebugMode) {
-      print(editUser.events.toString());
-    }
-    if (kDebugMode) {
-      print(editUser.techquestId.toString());
-    }
-    var count;
-    count =
-        teamcheck(editUser.techquestId.toString(), editUser.events.toString());
-    if (kDebugMode) {
-      print("count$count");
-    }
-    if (editUser.events == items[1].toString()) {
-      if (count < 2) {
-        cutomdia('Allow Participants', 'Do You Want To Allow ',
-            editUser.id.toString());
-        if (kDebugMode) {
-          print("${items[1].toString()} allow");
-        }
-      } else {
-        customshowAlertDialog("Warning", "Student is not allowed");
-        if (kDebugMode) {
-          print("${items[1].toString()}Not allowed");
-        }
-      }
-    } else if (editUser.events == items[2].toString()) {
-      if (count < 2) {
-        cutomdia('Allow Participants', 'Do You Want To Allow ',
-            editUser.id.toString());
-        if (kDebugMode) {
-          print("${items[2].toString()}allow");
-        }
-      } else {
-        customshowAlertDialog("Warning", "Student is not allowed");
-
-        if (kDebugMode) {
-          print("${items[2].toString()}Not allowed");
-        }
-      }
-    } else if (editUser.events == items[3].toString()) {
-      if (count < 3) {
-        cutomdia('Allow Participants', 'Do You Want To Allow ',
-            editUser.id.toString());
-        if (kDebugMode) {
-          print("${items[3].toString()}allow");
-        }
-      } else {
-        customshowAlertDialog("Warning", "Student is not allowed");
-
-        if (kDebugMode) {
-          print("${items[3].toString()}Not allowed");
-        }
-      }
-    } else if (editUser.events == items[4].toString()) {
-      if (count < 1) {
-        cutomdia('Allow Participants', 'Do You Want To Allow ',
-            editUser.id.toString());
-        if (kDebugMode) {
-          print("${items[4].toString()}allow");
-        }
-      } else {
-        customshowAlertDialog("Warning", "Student is not allowed");
-
-        if (kDebugMode) {
-          print("${items[4].toString()}Not allowed");
-        }
-      }
-    } else if (editUser.events == items[5].toString()) {
-      if (count < 1) {
-        cutomdia('Allow Participants', 'Do You Want To Allow ',
-            editUser.id.toString());
-        if (kDebugMode) {
-          print("${items[5].toString()}allow");
-        }
-      } else {
-        customshowAlertDialog("Warning", "Student is not allowed");
-
-        if (kDebugMode) {
-          print("${items[5].toString()}Not allowed");
-        }
-      }
-    }
-  }
+  editParticipate(arrival editUser) async {}
 }
