@@ -7,14 +7,14 @@ import 'package:http/http.dart' as http;
 import 'package:techquest/models/arrival.dart';
 import '../widgets/utils.dart';
 
-class ArrivalData extends StatefulWidget {
-  const ArrivalData({super.key});
+class FinalizeData extends StatefulWidget {
+  const FinalizeData({super.key});
 
   @override
-  State<ArrivalData> createState() => _ArrivalDataState();
+  State<FinalizeData> createState() => _FinalizeDataState();
 }
 
-class _ArrivalDataState extends State<ArrivalData> {
+class _FinalizeDataState extends State<FinalizeData> {
   late Future<List<arrival>> studentsFuture;
   List<arrival> students = [];
   List<dynamic> searchstudent = [];
