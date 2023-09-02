@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:techquest/models/arrival.dart';
-
 import '../widgets/utils.dart';
 
 class FinalizeData extends StatefulWidget {
@@ -112,7 +111,6 @@ class _FinalizeDataState extends State<FinalizeData> {
       final memberInfo = {
         'Member': item['Member'],
         'Events': item['Events'],
-        'Participate': item['Participate'],
         'Mark': item['Mark'],
       };
 
