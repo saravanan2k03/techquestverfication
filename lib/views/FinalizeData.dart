@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:techquest/models/arrival.dart';
+
 import '../widgets/utils.dart';
 
 class FinalizeData extends StatefulWidget {
@@ -16,6 +17,7 @@ class FinalizeData extends StatefulWidget {
 
 class _FinalizeDataState extends State<FinalizeData> {
   late Future<List<arrival>> studentsFuture;
+
   List<arrival> students = [];
   List<dynamic> searchstudent = [];
   String url = "https://mzcet.in/techquest23/api/Allow.php";
@@ -42,6 +44,7 @@ class _FinalizeDataState extends State<FinalizeData> {
         List<arrival> students =
             student.map((stu) => arrival.fromJson(stu)).toList();
         searchstudent = jsonDecode(result.body);
+
         if (kDebugMode) {
           print(searchstudent);
         }
@@ -80,28 +83,44 @@ class _FinalizeDataState extends State<FinalizeData> {
     }
   }
 
-  // Future<void> sendPostRequest(String id) async {
-  //   // Replace with your actual URL
-  //   final response = await http.post(
-  //     Uri.parse('https://mzcet.in/techquest23/api/Allow.php'),
-  //     body: {
-  //       'id': id,
-  //     }, // Replace '1' with the actual techquest_id you want to update
-  //   );
+  Future hmain() async {
+    final groupedData = groupByTeam(searchstudent);
 
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-  //     if (kDebugMode) {
-  //       print('Success: ${data['success']}');
-  //     }
-  //   } else {
-  //     customshowAlertDialog(
-  //         'Error', 'Request failed with status:${response.statusCode}');
-  //     if (kDebugMode) {
-  //       print('Request failed with status: ${response.statusCode}');
-  //     }
-  //   }
-  // }
+    if (kDebugMode) {
+      print(groupedData);
+    }
+  }
+
+  Map<int, Map<String, dynamic>> groupByTeam(List<dynamic> jsonList) {
+    final groupedData = <int, Map<String, dynamic>>{};
+
+    for (final item in jsonList) {
+      final teamId = int.tryParse(item['techquest_id'] ?? '');
+
+      if (teamId == null) {
+        continue;
+      }
+
+      if (!groupedData.containsKey(teamId)) {
+        groupedData[teamId] = {
+          'techquest_id': teamId,
+          'TeamName': item['TeamName'],
+          'Members': <Map<String, dynamic>>[],
+        };
+      }
+
+      final memberInfo = {
+        'Member': item['Member'],
+        'Events': item['Events'],
+        'Participate': item['Participate'],
+        'Mark': item['Mark'],
+      };
+
+      groupedData[teamId]?['Members'].add(memberInfo);
+    }
+
+    return groupedData;
+  }
 
   Future<void> customshowAlertDialog(String tittle, String content) async {
     return showDialog<void>(
@@ -389,7 +408,7 @@ class _FinalizeDataState extends State<FinalizeData> {
                           child: MaterialButton(
                             color: const Color.fromARGB(255, 77, 45, 111),
                             onPressed: () {
-                              // setState(() {});
+                              hmain();
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
