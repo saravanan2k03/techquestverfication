@@ -82,14 +82,6 @@ class _FinalizeDataState extends State<FinalizeData> {
     }
   }
 
-  Future hmain() async {
-    final groupedData = groupByTeam(searchstudent);
-
-    if (kDebugMode) {
-      print(groupedData);
-    }
-  }
-
   List groupByTeam(List<dynamic> jsonList) {
     final groupedData = <String, Map<String, dynamic>>{};
 
@@ -424,9 +416,7 @@ class _FinalizeDataState extends State<FinalizeData> {
                           width: MediaQuery.of(context).size.width * 0.15,
                           child: MaterialButton(
                             color: const Color.fromARGB(255, 77, 45, 111),
-                            onPressed: () {
-                              hmain();
-                            },
+                            onPressed: () {},
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
@@ -593,7 +583,7 @@ class _FinalizeDataState extends State<FinalizeData> {
               : const Color.fromARGB(255, 10, 40, 141);
           return DataRow(
             cells: Utils.modelBuilder(cells, (index, cell) {
-              final showEditIcon = index == 4;
+              final showEditIcon = index == 6;
               return DataCell(
                 Text(
                   '$cell',
