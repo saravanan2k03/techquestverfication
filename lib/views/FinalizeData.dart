@@ -39,7 +39,7 @@ class _FinalizeDataState extends State<FinalizeData> {
         },
       );
       if (result.statusCode == 200) {
-        List<dynamic> student = jsonDecode(result.body);
+        List<dynamic> student = groupByTeam(jsonDecode(result.body));
         List<arrival> students =
             student.map((stu) => arrival.fromJson(stu)).toList();
         searchstudent = jsonDecode(result.body);
@@ -71,7 +71,7 @@ class _FinalizeDataState extends State<FinalizeData> {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> student = jsonDecode(response.body);
+      List<dynamic> student = groupByTeam(jsonDecode(response.body));
       students = student.map((stu) => arrival.fromJson(stu)).toList();
       return students;
     } else {
@@ -90,34 +90,53 @@ class _FinalizeDataState extends State<FinalizeData> {
     }
   }
 
-  Map<int, Map<String, dynamic>> groupByTeam(List<dynamic> jsonList) {
-    final groupedData = <int, Map<String, dynamic>>{};
+  List groupByTeam(List<dynamic> jsonList) {
+    final groupedData = <String, Map<String, dynamic>>{};
 
     for (final item in jsonList) {
-      final teamId = int.tryParse(item['techquest_id'] ?? '');
+      final teamId = int.tryParse(item['techquest_id'] ?? '0');
+      final uniqueEvent = item['Events'];
 
-      if (teamId == null) {
+      if (teamId == 0 || teamId == null) {
         continue;
       }
 
-      if (!groupedData.containsKey(teamId)) {
-        groupedData[teamId] = {
-          'techquest_id': teamId,
+      if (groupedData.containsKey('${teamId.toString()}:$uniqueEvent') &&
+          item["Participate"] == "Yes") {
+        List mems = groupedData['${teamId.toString()}:$uniqueEvent']!['Member'];
+        mems.add(item['Member']);
+        groupedData['${teamId.toString()}:$uniqueEvent'] = {
+          'id': item['id'],
+          'techquest_id': teamId.toString(),
           'TeamName': item['TeamName'],
-          'Members': <Map<String, dynamic>>[],
+          'Events': item['Events'],
+          'Mark': item['Mark'],
+          'Participate': 'Yes',
+          'Member': mems
+        };
+      } else if (item["Participate"] == "Yes") {
+        groupedData['${teamId.toString()}:$uniqueEvent'] = {
+          'id': item['id'],
+          'techquest_id': teamId.toString(),
+          'TeamName': item['TeamName'],
+          'Events': item['Events'],
+          'Mark': item['Mark'],
+          'Participate': 'Yes',
+          'Member': [item['Member']]
         };
       }
-
-      final memberInfo = {
-        'Member': item['Member'],
-        'Events': item['Events'],
-        'Mark': item['Mark'],
-      };
-
-      groupedData[teamId]?['Members'].add(memberInfo);
     }
+    List result = [];
 
-    return groupedData;
+    for (var element in groupedData.values) {
+      element['Member'] =
+          element['Member'].toString().replaceAll('[', '').replaceAll(']', '');
+
+      result.add(element);
+    }
+    result.sort((a, b) => int.parse(b['Mark']).compareTo(int.parse(a['Mark'])));
+    print('sens $result');
+    return result;
   }
 
   Future<void> customshowAlertDialog(String tittle, String content) async {
@@ -506,7 +525,7 @@ class _FinalizeDataState extends State<FinalizeData> {
       'TEAM NAME',
       'STUDENT',
       'EVENT',
-      'PARTICIPATE'
+      'MARK'
     ];
 
     return FutureBuilder<List<arrival>>(
@@ -567,7 +586,7 @@ class _FinalizeDataState extends State<FinalizeData> {
             user.teamName,
             user.member,
             user.events,
-            user.participate
+            user.mark
           ];
           Color cellColor = user.participate!.toLowerCase() == 'no'
               ? Colors.red // Change this to the desired color
