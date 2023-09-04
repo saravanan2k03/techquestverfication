@@ -127,7 +127,9 @@ class _FinalizeDataState extends State<FinalizeData> {
       result.add(element);
     }
     result.sort((a, b) => int.parse(b['Mark']).compareTo(int.parse(a['Mark'])));
-    print('sens $result');
+    if (kDebugMode) {
+      print('sens $result');
+    }
     return result;
   }
 
