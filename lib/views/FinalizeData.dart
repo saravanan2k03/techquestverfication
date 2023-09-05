@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:techquest/api/PdfApi.dart';
 import 'package:techquest/models/arrival.dart';
 import '../widgets/utils.dart';
@@ -423,6 +424,11 @@ class _FinalizeDataState extends State<FinalizeData> {
                           child: MaterialButton(
                             color: const Color.fromARGB(255, 77, 45, 111),
                             onPressed: () async {
+                              DateTime currentDate = DateTime.now();
+                              var todaydate = currentDate.toUtc().toString();
+                              final utcTimestamp = DateTime.parse(todaydate);
+                              final formattedDate =
+                                  DateFormat.yMMMd().format(utcTimestamp);
                               List<List<dynamic>> data = [];
                               final header = [
                                 'TEAM ID',
@@ -441,13 +447,8 @@ class _FinalizeDataState extends State<FinalizeData> {
                                 ];
                                 data.add(temp);
                               }
-                              // List<List<dynamic>> dataReport = [
-                              //   ['1', 'Team A', 'John Doe', 'Event 1'],
-                              //   ['2', 'Team B', 'Jane Smith', 'Event 2'],
-                              //   // Add more rows as needed
-                              // ];
-                              final pdfFile =
-                                  await PdfApi.generateTable(data, header);
+                              final pdfFile = await PdfApi.generateTable(
+                                  data, header, formattedDate);
 
                               // Open the saved PDF file
                               await PdfApi.openFile(pdfFile);

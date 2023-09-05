@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:techquest/models/arrival.dart';
+import '../api/PdfApi.dart';
 import '../widgets/utils.dart';
 
 class ArrivalData extends StatefulWidget {
@@ -71,6 +73,8 @@ class _ArrivalDataState extends State<ArrivalData> {
     if (response.statusCode == 200) {
       List<dynamic> student = jsonDecode(response.body);
       students = student.map((stu) => arrival.fromJson(stu)).toList();
+      searchstudent = jsonDecode(response.body);
+
       return students;
     } else {
       if (kDebugMode) {
@@ -388,8 +392,35 @@ class _ArrivalDataState extends State<ArrivalData> {
                           width: MediaQuery.of(context).size.width * 0.15,
                           child: MaterialButton(
                             color: const Color.fromARGB(255, 77, 45, 111),
-                            onPressed: () {
-                              // setState(() {});
+                            onPressed: () async {
+                              List<List<dynamic>> data = [];
+                              DateTime currentDate = DateTime.now();
+                              var todaydate = currentDate.toUtc().toString();
+                              final utcTimestamp = DateTime.parse(todaydate);
+                              final formattedDate =
+                                  DateFormat.yMMMd().format(utcTimestamp);
+                              final header = [
+                                'TEAM ID',
+                                'TEAM NAME',
+                                'STUDENT NAME',
+                                'EVENT',
+                                'PARTICIPATE'
+                              ];
+                              for (var element in searchstudent) {
+                                List temp = [
+                                  element['techquest_id'],
+                                  element['TeamName'],
+                                  element['Member'],
+                                  element['Events'],
+                                  element['Participate']
+                                ];
+                                data.add(temp);
+                              }
+                              final pdfFile = await PdfApi.generateTable(
+                                  data, header, formattedDate);
+
+                              // Open the saved PDF file
+                              await PdfApi.openFile(pdfFile);
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(

@@ -6,10 +6,10 @@ import 'package:open_file/open_file.dart';
 
 class PdfApi {
   static Future<File> generateTable(
-      List<List<dynamic>> dataReport, var header) async {
+      List<List<dynamic>> dataReport, var header, String date) async {
     final pdf = pw.Document();
     // Create the PDF content using the provided dataReport
-    await createPdfContent(pdf, dataReport, header);
+    await createPdfContent(pdf, dataReport, header, date);
 
     // Save the PDF document
     return saveDocument(name: 'My_example.pdf', pdf: pdf);
@@ -36,7 +36,7 @@ class PdfApi {
   }
 
   static Future<void> createPdfContent(pw.Document pdf,
-      List<List<dynamic>> dataReport, List<String> header) async {
+      List<List<dynamic>> dataReport, List<String> header, String Date) async {
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
@@ -45,6 +45,14 @@ class PdfApi {
             width: PdfPageFormat.a4.width,
             height: PdfPageFormat.a4.height,
             child: pw.Column(children: [
+              pw.Center(
+                  child: pw.Text(
+                      "National Level Technical Symposium — Techquest @ 23",
+                      style: pw.TextStyle(
+                        color: const PdfColor.fromInt(0xff4F3D56),
+                        fontSize: 18,
+                        fontWeight: pw.FontWeight.bold,
+                      ))),
               pw.Center(
                   child: pw.Text("Student Report",
                       style: pw.TextStyle(
@@ -56,7 +64,7 @@ class PdfApi {
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.end, children: [
                 pw.Padding(
                     padding: const pw.EdgeInsets.all(4),
-                    child: pw.Text("Date: 05-09-2023",
+                    child: pw.Text("Date: $Date",
                         style: pw.TextStyle(
                           color: const PdfColor.fromInt(0xff000000),
                           fontSize: 10,
@@ -73,7 +81,7 @@ class PdfApi {
                 headerStyle: pw.TextStyle(
                   fontWeight: pw.FontWeight.bold,
                   color: PdfColors.white,
-                  fontSize: 4.6,
+                  fontSize: 5,
                 ),
                 headers: header,
                 data: dataReport,

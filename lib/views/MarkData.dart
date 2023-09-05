@@ -5,7 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:techquest/widgets/EditParticipate.dart';
+import '../api/PdfApi.dart';
 import '../models/studentmark.dart';
 import '../widgets/utils.dart';
 
@@ -20,6 +22,7 @@ class _MarkDataState extends State<MarkData> {
   late Future<List<StudentMark>> studentsFuture;
   String searchvalue = "";
   String dropdownvalue = 'Choose Event';
+  List<dynamic> searchstudent = [];
   var items = [
     'Choose Event',
     'KnowlegdeBowl',
@@ -40,7 +43,7 @@ class _MarkDataState extends State<MarkData> {
         List<dynamic> student = jsonDecode(result.body);
         List<StudentMark> students =
             student.map((stu) => StudentMark.fromJson(stu)).toList();
-
+        searchstudent = jsonDecode(result.body);
         return students;
       } else {
         if (kDebugMode) {
@@ -68,6 +71,7 @@ class _MarkDataState extends State<MarkData> {
       List<dynamic> student = jsonDecode(response.body);
       List<StudentMark> students =
           student.map((stu) => StudentMark.fromJson(stu)).toList();
+      searchstudent = jsonDecode(response.body);
 
       return students;
     } else {
@@ -303,8 +307,33 @@ class _MarkDataState extends State<MarkData> {
                           width: MediaQuery.of(context).size.width * 0.15,
                           child: MaterialButton(
                             color: const Color.fromARGB(255, 77, 45, 111),
-                            onPressed: () {
-                              // setState(() {});
+                            onPressed: () async {
+                              List<List<dynamic>> data = [];
+                              DateTime currentDate = DateTime.now();
+                              var todaydate = currentDate.toUtc().toString();
+                              final utcTimestamp = DateTime.parse(todaydate);
+                              final formattedDate =
+                                  DateFormat.yMMMd().format(utcTimestamp);
+                              final header = [
+                                'TEAM ID',
+                                'TEAM NAME',
+                                'EVENT',
+                                'MARK'
+                              ];
+                              for (var element in searchstudent) {
+                                List temp = [
+                                  element['techquest_id'],
+                                  element['TeamName'],
+                                  element['Events'],
+                                  element['Mark']
+                                ];
+                                data.add(temp);
+                              }
+                              final pdfFile = await PdfApi.generateTable(
+                                  data, header, formattedDate);
+
+                              // Open the saved PDF file
+                              await PdfApi.openFile(pdfFile);
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
