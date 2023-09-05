@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:techquest/api/PdfApi.dart';
 import 'package:techquest/models/arrival.dart';
 import '../widgets/utils.dart';
 
@@ -19,6 +20,7 @@ class _FinalizeDataState extends State<FinalizeData> {
 
   List<arrival> students = [];
   List<dynamic> searchstudent = [];
+
   String url = "https://mzcet.in/techquest23/api/Allow.php";
   String searchvalue = "";
   String dropdownvalue = 'Choose Event';
@@ -42,8 +44,7 @@ class _FinalizeDataState extends State<FinalizeData> {
         List<dynamic> student = groupByTeam(jsonDecode(result.body));
         List<arrival> students =
             student.map((stu) => arrival.fromJson(stu)).toList();
-        searchstudent = jsonDecode(result.body);
-
+        searchstudent = groupByTeam(jsonDecode(result.body));
         if (kDebugMode) {
           print(searchstudent);
         }
@@ -72,6 +73,9 @@ class _FinalizeDataState extends State<FinalizeData> {
 
     if (response.statusCode == 200) {
       List<dynamic> student = groupByTeam(jsonDecode(response.body));
+      //searchstudent = jsonDecode(response.body);
+      searchstudent = groupByTeam(jsonDecode(response.body));
+      //sens
       students = student.map((stu) => arrival.fromJson(stu)).toList();
       return students;
     } else {
@@ -418,7 +422,36 @@ class _FinalizeDataState extends State<FinalizeData> {
                           width: MediaQuery.of(context).size.width * 0.15,
                           child: MaterialButton(
                             color: const Color.fromARGB(255, 77, 45, 111),
-                            onPressed: () {},
+                            onPressed: () async {
+                              List<List<dynamic>> data = [];
+                              final header = [
+                                'TEAM ID',
+                                'TEAM NAME',
+                                'STUDENT NAME',
+                                'EVENT',
+                                'MARK'
+                              ];
+                              for (var element in searchstudent) {
+                                List temp = [
+                                  element['techquest_id'],
+                                  element['TeamName'],
+                                  element['Member'],
+                                  element['Events'],
+                                  element['Mark']
+                                ];
+                                data.add(temp);
+                              }
+                              // List<List<dynamic>> dataReport = [
+                              //   ['1', 'Team A', 'John Doe', 'Event 1'],
+                              //   ['2', 'Team B', 'Jane Smith', 'Event 2'],
+                              //   // Add more rows as needed
+                              // ];
+                              final pdfFile =
+                                  await PdfApi.generateTable(data, header);
+
+                              // Open the saved PDF file
+                              await PdfApi.openFile(pdfFile);
+                            },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
