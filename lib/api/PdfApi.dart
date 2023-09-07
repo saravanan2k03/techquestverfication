@@ -12,7 +12,7 @@ class PdfApi {
     await createPdfContent(pdf, dataReport, header, date);
 
     // Save the PDF document
-    return saveDocument(name: 'My_example.pdf', pdf: pdf);
+    return saveDocument(name: 'Report.pdf', pdf: pdf);
   }
 
   static Future<File> saveDocument({
@@ -47,7 +47,7 @@ class PdfApi {
             child: pw.Column(children: [
               pw.Center(
                   child: pw.Text(
-                      "National Level Technical Symposium — Techquest @ 23",
+                      "National Level Technical Symposium Techquest 2023",
                       style: pw.TextStyle(
                         color: const PdfColor.fromInt(0xff4F3D56),
                         fontSize: 18,

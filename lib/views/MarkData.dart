@@ -339,7 +339,7 @@ class _MarkDataState extends State<MarkData> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
                               child: Text(
-                                "DOWNLOAD",
+                                "EXPORT PDF",
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,

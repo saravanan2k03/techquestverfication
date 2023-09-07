@@ -34,7 +34,7 @@ class _ArrivalDataState extends State<ArrivalData> {
   Future<List<arrival>> GetStudent() async {
     try {
       var result = await http.get(
-        Uri.parse('https://mzcet.in/techquest23/api/arrivaljson.php'),
+        Uri.parse('https://mzcet.in/techquest23/api/arrivalorderjson.php'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -64,7 +64,7 @@ class _ArrivalDataState extends State<ArrivalData> {
 
   Future<List<arrival>> SubmitEvent() async {
     final response = await http.post(
-      Uri.parse('https://mzcet.in/techquest23/api/arrivalreturnwhere.php'),
+      Uri.parse('https://mzcet.in/techquest23/api/arrivalreturnwhereorder.php'),
       body: {
         'Event': dropdownvalue.toString(),
       },
@@ -426,7 +426,7 @@ class _ArrivalDataState extends State<ArrivalData> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
                               child: Text(
-                                "DOWNLOAD",
+                                "EXPORT PDF",
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
