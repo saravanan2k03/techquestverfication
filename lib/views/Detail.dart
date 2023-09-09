@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, empty_catches
 
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -41,7 +41,9 @@ class _DetailState extends State<Detail> {
   String arrival = "https://mzcet.in/techquest23/api/arrival.php";
   List<String> student = [];
   List<String> EventList = [];
-
+  List<dynamic> user = [];
+  List<dynamic> qrcode = [];
+  List<dynamic> time = ["10:40", "12:30"];
   Future<void> sendPostRequest() async {
     // Replace with your actual URL
     final response = await http.post(
@@ -93,6 +95,35 @@ class _DetailState extends State<Detail> {
           'Error', 'Request failed with status:${response.statusCode}');
       if (kDebugMode) {
         print('Request failed with status: ${response.statusCode}');
+      }
+    }
+  }
+
+  Addref(String teamid) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'https://mzcet.in/techquest23/api/arrivalreturnwhereorder.php'),
+        body: {
+          'user': user,
+          'qr': qrcode,
+          "teamid": teamid,
+          "date": "15-09-2023",
+          "time": time,
+          "getting": "Not Get"
+        },
+      );
+
+      if (response.statusCode == 200) {
+      } else {
+        if (kDebugMode) {
+          print("Error");
+        }
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
       }
     }
   }
