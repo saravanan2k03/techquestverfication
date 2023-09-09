@@ -17,16 +17,19 @@ try {
       console.log(req.body.time)
       console.log(req.body.user)
       console.log(req.body.qr)
-      for (let i = 0; i < req.body.time[0]?.length ?? 0; i++) {
-        for (let i = 0; i < req.body.user[0]?.length ?? 0; i++) {
+      for (let i = 0; i < req.body.time?.length ?? 0; i++) {
+        for (let j = 0; j < req.body.user?.length ?? 0; j++) {
+          console.log(req.body.time[i])
+          console.log(req.body.user[j])
+          console.log(req.body.qr[j])
           RequestDatabase.query(
-            "INSERT INTO Sympo (TeamId, StudentName, Qrcode, Date, Time, Getting,DateTime) VALUES ('" + req.body.teamid + "','" + req.body.user[i] + "','" + req.body.qr[i] + "','" + req.body.date + "','" + req.body.time + "','" + req.body.getting + "',GetDate())",
+            "INSERT INTO Sympo (TeamId, StudentName, Qrcode, Date, Time, Getting,DateTime) VALUES ('" + req.body.teamid + "','" + req.body.user[j] + "','" + req.body.qr[j] + "','" + req.body.date + "','" + req.body.time[i] + "','" + req.body.getting + "',GetDate())",
             (err, result) => {
               if (err) {
                 console.log(err);
                 return res.status(500).send("Error");
               } else {
-                res.send("success");
+               console.log("OK");
               }
             }
           );
@@ -34,9 +37,8 @@ try {
 
       }
 
-
     }
-
+    res.send("success");
   });
 
   app.get('/Get', (req, res) => {
