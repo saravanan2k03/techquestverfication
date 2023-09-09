@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import '../models/studentdetails.dart';
 import 'Detail.dart';
 
 class Entry extends StatefulWidget {
@@ -16,40 +17,35 @@ class Entry extends StatefulWidget {
 
 class _EntryState extends State<Entry> {
   List<dynamic> student = [];
+  late Future<List<StudentDetails>> studentsFuture;
+  List<StudentDetails> studentdetails = [];
   List<dynamic> Event = [];
   String searchvalue = "";
-  Future GetStudent() async {
+  var stuurl = "https://mzcet.in/techquest23/returnjson.php";
+  Future<List<StudentDetails>> GetStudent() async {
     try {
       var result = await http.get(
-        Uri.parse('https://mzcet.in/techquest23/returnjson.php'),
+        Uri.parse(stuurl),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
       if (result.statusCode == 200) {
-        student = jsonDecode(result.body);
-        if (kDebugMode) {
-          setState(() {
-            if (kDebugMode) {
-              print(student);
-            }
-            if (kDebugMode) {
-              print(student[0]["TeamName"]);
-            }
-            if (kDebugMode) {
-              print(student.length);
-            }
-          });
-        }
+        List<dynamic> student = jsonDecode(result.body);
+        List<StudentDetails> studentdetails =
+            student.map((stu) => StudentDetails.fromJson(stu)).toList();
+        return studentdetails;
       } else {
         if (kDebugMode) {
-          print(result.body);
+          print("Error");
         }
+        throw Exception('Failed to load data');
       }
     } catch (ex) {
       if (kDebugMode) {
         print(ex.toString());
       }
+      throw Exception('Failed to load data');
     }
   }
 
@@ -118,9 +114,32 @@ class _EntryState extends State<Entry> {
     }
   }
 
+  Future<List<StudentDetails>> initializeData() async {
+    try {
+      List<StudentDetails> studentdetails = await GetStudent();
+      // if (kDebugMode) {
+      //   for (var student in students) {
+      //     print("Team Name: ${student.teamName}, Member: ${student.member}");
+      //   }
+      // }
+      return studentdetails;
+    } catch (ex) {
+      if (kDebugMode) {
+        print(ex.toString());
+      }
+      rethrow; // Rethrow the exception to propagate it
+    }
+  }
+
+  ApiCall() {
+    setState(() {
+      studentsFuture = initializeData();
+    });
+  }
+
   @override
   void initState() {
-    GetStudent();
+    ApiCall();
     super.initState();
   }
 
@@ -231,7 +250,7 @@ class _EntryState extends State<Entry> {
                           color: const Color.fromARGB(255, 77, 45, 111),
                           onPressed: () {
                             setState(() {
-                              GetStudent();
+                              ApiCall();
                             });
                           },
                           child: Padding(
@@ -271,247 +290,297 @@ class _EntryState extends State<Entry> {
                     ),
                   ],
                 ),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: student
-                        .where((element) => element['TeamName']
-                            .toString()
-                            .toLowerCase()
-                            .contains(searchvalue.toLowerCase()))
-                        .length,
-                    itemBuilder: (context, index) {
-                      var stu = student
-                          .where((element) => element['TeamName']
-                              .toString()
-                              .toLowerCase()
-                              .contains(searchvalue.toLowerCase()))
-                          .toList()[index];
-                      if (kDebugMode) {
-                        print("enter");
-                      }
-                      if (kDebugMode) {
-                        print(stu["ScreenShot"]);
-                      }
-                      return Column(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.05,
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.17,
-                            width: MediaQuery.of(context).size.width * 0.70,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 254, 254, 254),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(61, 23, 24, 25)
-                                      .withOpacity(0.3),
-                                  spreadRadius: 0,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.13,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.07,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color.fromARGB(
-                                                  61, 23, 24, 25)
+                child: FutureBuilder<List<StudentDetails>>(
+                  future: studentsFuture, // Use the future containing your data
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
+                        height: 100,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(child: CircularProgressIndicator()),
+                          ],
+                        ),
+                      ); // Show a loading indicator while data is loading
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const SizedBox(
+                          height: 100,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('No data available.'),
+                            ],
+                          ));
+                    } else {
+                      // teamcheck();
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!
+                            .where((element) => element.teamName
+                                .toString()
+                                .toLowerCase()
+                                .contains(searchvalue.toLowerCase()))
+                            .length,
+                        itemBuilder: (context, index) {
+                          var stu = snapshot.data!
+                              .where((element) => element.teamName
+                                  .toString()
+                                  .toLowerCase()
+                                  .contains(searchvalue.toLowerCase()))
+                              .toList()[index];
+                          if (kDebugMode) {
+                            print("enter");
+                          }
+                          if (kDebugMode) {
+                            print(stu.screenShot.toString());
+                          }
+                          return Column(
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
+                              ),
+                              Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.17,
+                                width: MediaQuery.of(context).size.width * 0.70,
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(255, 254, 254, 254),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          const Color.fromARGB(61, 23, 24, 25)
                                               .withOpacity(0.3),
-                                          spreadRadius: 0,
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
+                                      spreadRadius: 0,
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 2),
                                     ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: imgefunc(
-                                          stu["ScreenShot"].toString()),
-                                    ),
-                                  ),
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.5,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10),
-                                                child: Text(
-                                                  "${stu["CollegeName"]}",
-                                                  style: GoogleFonts.poppins(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.5,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Team Name:",
-                                                style: GoogleFonts.poppins(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10),
-                                                child: Text(
-                                                  "${stu["TeamName"]}",
-                                                  style: GoogleFonts.poppins(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.5,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Team Leader:",
-                                                style: GoogleFonts.poppins(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 05),
-                                                child: Text(
-                                                  "${stu["TeamLeader"]}",
-                                                  style: GoogleFonts.poppins(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.06,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.09,
-                                  child: MaterialButton(
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20.0))),
-                                    color:
-                                        const Color.fromARGB(255, 77, 45, 111),
-                                    onPressed: () {
-                                      SendEvent(
-                                        stu["Knowlegde_Bowl"],
-                                        stu["Quizardry"],
-                                        stu["Tech_vein"],
-                                        stu["Design_up"],
-                                        stu["CodeLog"],
-                                      ).whenComplete(() {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => Detail(
-                                              EventList: Event,
-                                              CollegeName:
-                                                  stu["CollegeName"].toString(),
-                                              Screenshot: stu["ScreenShot"],
-                                              TeamId: stu["techquest_id"]
-                                                  .toString(),
-                                              TeamLeader:
-                                                  stu["TeamLeader"].toString(),
-                                              TeamMemberone:
-                                                  stu["Memberone"].toString(),
-                                              TeamMembertwo:
-                                                  stu["MemberTwo"].toString(),
-                                              TeamName:
-                                                  stu["TeamName"].toString(),
-                                              verification: stu["verification"]
-                                                  .toString(),
-                                            ),
-                                          ),
-                                        );
-                                      });
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 10),
-                                      child: Text(
-                                        "VIEW",
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.13,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.07,
+                                        decoration: BoxDecoration(
                                           color: const Color.fromARGB(
                                               255, 255, 255, 255),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color.fromARGB(
+                                                      61, 23, 24, 25)
+                                                  .withOpacity(0.3),
+                                              spreadRadius: 0,
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: imgefunc(
+                                              stu.screenShot.toString()),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.5,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 10),
+                                                    child: Text(
+                                                      "${stu.collegeName}",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 13,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.5,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "Team Name:",
+                                                    style: GoogleFonts.poppins(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 13,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 10),
+                                                    child: Text(
+                                                      "${stu.teamName}",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 13,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.5,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "Team Leader:",
+                                                    style: GoogleFonts.poppins(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 13,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 05),
+                                                    child: Text(
+                                                      "${stu.teamLeader}",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 13,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.06,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.09,
+                                      child: MaterialButton(
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20.0))),
+                                        color: const Color.fromARGB(
+                                            255, 77, 45, 111),
+                                        onPressed: () {
+                                          SendEvent(
+                                            stu.knowlegdeBowl,
+                                            stu.quizardry,
+                                            stu.techVein,
+                                            stu.designUp,
+                                            stu.codeLog,
+                                          ).whenComplete(() {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) => Detail(
+                                                  EventList: Event,
+                                                  CollegeName: stu.collegeName
+                                                      .toString(),
+                                                  Screenshot: stu.screenShot,
+                                                  TeamId: stu.techquestId
+                                                      .toString(),
+                                                  TeamLeader:
+                                                      stu.teamLeader.toString(),
+                                                  TeamMemberone:
+                                                      stu.memberone.toString(),
+                                                  TeamMembertwo:
+                                                      stu.memberTwo.toString(),
+                                                  TeamName:
+                                                      stu.teamName.toString(),
+                                                  verification: stu.verification
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
+                                          child: Text(
+                                            "VIEW",
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: const Color.fromARGB(
+                                                  255, 255, 255, 255),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          );
+                        },
                       );
-                    }),
+                    }
+                  },
+                ),
               ),
             ),
           ],
