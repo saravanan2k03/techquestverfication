@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, empty_catches
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, empty_catches, unnecessary_null_comparison
 
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -237,6 +237,27 @@ class _DetailState extends State<Detail> {
     }
   }
 
+  imgefunc(String image) {
+    if (image == "null" || image == null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.asset(
+          'assets/images/no-image-icon-23500.jpg',
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      final imageUrl = "https://mzcet.in/techquest23/$image";
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     Profile();
@@ -297,9 +318,7 @@ class _DetailState extends State<Detail> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                                fit: BoxFit.cover,
-                                "https://mzcet.in/techquest23/${widget.Screenshot}"),
+                            child: imgefunc(widget.Screenshot.toString()),
                           ),
                         ),
                       ),

@@ -1,7 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison, non_constant_identifier_names
 
 import 'dart:convert';
-import 'dart:js_interop';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -100,19 +99,20 @@ class _EntryState extends State<Entry> {
   }
 
   imgefunc(String image) {
-    if (image == null || image.isEmpty || image.isNull || image == "null") {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          "https://mzcet.in/techquest23/$image}",
-          fit: BoxFit.cover,
-        ),
-      );
-    } else {
+    if (image == "null" || image == null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Image.asset(
           'assets/images/no-image-icon-23500.jpg',
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      final imageUrl = "https://mzcet.in/techquest23/$image";
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          imageUrl,
           fit: BoxFit.cover,
         ),
       );
@@ -287,6 +287,12 @@ class _EntryState extends State<Entry> {
                               .toLowerCase()
                               .contains(searchvalue.toLowerCase()))
                           .toList()[index];
+                      if (kDebugMode) {
+                        print("enter");
+                      }
+                      if (kDebugMode) {
+                        print(stu["ScreenShot"]);
+                      }
                       return Column(
                         children: [
                           SizedBox(
@@ -334,7 +340,8 @@ class _EntryState extends State<Entry> {
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: imgefunc(stu["ScreenShot"]),
+                                      child: imgefunc(
+                                          stu["ScreenShot"].toString()),
                                     ),
                                   ),
                                 ),
