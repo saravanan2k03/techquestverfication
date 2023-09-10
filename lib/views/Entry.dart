@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import '../api/PdfApi.dart';
 import '../models/studentdetails.dart';
 import 'Detail.dart';
 
@@ -32,9 +34,12 @@ class _EntryState extends State<Entry> {
         },
       );
       if (result.statusCode == 200) {
-        List<dynamic> student = jsonDecode(result.body);
+        student = jsonDecode(result.body);
         List<StudentDetails> studentdetails =
             student.map((stu) => StudentDetails.fromJson(stu)).toList();
+        if (kDebugMode) {
+          print(student);
+        }
         return studentdetails;
       } else {
         if (kDebugMode) {
@@ -241,16 +246,43 @@ class _EntryState extends State<Entry> {
                       width: MediaQuery.of(context).size.width * 0.15,
                       child: MaterialButton(
                         color: const Color.fromARGB(255, 77, 45, 111),
-                        onPressed: () {
-                          setState(() {
-                            // sendPostcheck();
-                          });
+                        onPressed: () async {
+                          List<List<dynamic>> data = [];
+                          DateTime currentDate = DateTime.now();
+                          var todaydate = currentDate.toUtc().toString();
+                          final utcTimestamp = DateTime.parse(todaydate);
+                          final formattedDate =
+                              DateFormat.yMMMd().format(utcTimestamp);
+                          final header = [
+                            'TEAM ID',
+                            'TEAM NAME',
+                            'TEAM LEADER',
+                            'COLLEGE NAME',
+                            'EMAIL',
+                            'VERIFICATION'
+                          ];
+                          for (var element in student) {
+                            List temp = [
+                              element['techquest_id'],
+                              element['TeamName'],
+                              element['TeamLeader'],
+                              element['CollegeName'],
+                              element['Email'],
+                              element['verification']
+                            ];
+                            data.add(temp);
+                          }
+                          final pdfFile = await PdfApi.generateTable(
+                              data, header, formattedDate, "ENTRYREPORT.pdf");
+
+                          // Open the saved PDF file
+                          await PdfApi.openFile(pdfFile);
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           child: Text(
-                            "SEARCH",
+                            "EXPORT PDF",
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,

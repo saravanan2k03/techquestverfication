@@ -617,16 +617,18 @@ class _ArrivalDataState extends State<ArrivalData> {
     String id,
     String event,
   ) {
-    print(searchstudent
-        .where((element) =>
-            element['techquest_id'].toString().contains(id.toString()))
-        .toList()
-        .where((element) =>
-            element['Events'].toString().contains(event.toString()))
-        .toList()
-        .where((element) =>
-            element['Participate'].toString().toLowerCase().contains("yes"))
-        .toList());
+    if (kDebugMode) {
+      print(searchstudent
+          .where((element) =>
+              element['techquest_id'].toString().contains(id.toString()))
+          .toList()
+          .where((element) =>
+              element['Events'].toString().contains(event.toString()))
+          .toList()
+          .where((element) =>
+              element['Participate'].toString().toLowerCase().contains("yes"))
+          .toList());
+    }
     return searchstudent
         .where((element) =>
             element['techquest_id'].toString().contains(id.toString()))
