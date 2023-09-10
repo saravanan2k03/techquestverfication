@@ -447,8 +447,8 @@ class _FinalizeDataState extends State<FinalizeData> {
                                 ];
                                 data.add(temp);
                               }
-                              final pdfFile = await PdfApi.generateTable(
-                                  data, header, formattedDate);
+                              final pdfFile = await PdfApi.generateTable(data,
+                                  header, formattedDate, "FINALIZEMARK.pdf");
 
                               // Open the saved PDF file
                               await PdfApi.openFile(pdfFile);

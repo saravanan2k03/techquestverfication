@@ -21,6 +21,7 @@ class _EntryState extends State<Entry> {
   List<StudentDetails> studentdetails = [];
   List<dynamic> Event = [];
   String searchvalue = "";
+  bool verification = false;
   var stuurl = "https://mzcet.in/techquest23/returnjson.php";
   Future<List<StudentDetails>> GetStudent() async {
     try {
@@ -117,17 +118,33 @@ class _EntryState extends State<Entry> {
   Future<List<StudentDetails>> initializeData() async {
     try {
       List<StudentDetails> studentdetails = await GetStudent();
-      // if (kDebugMode) {
-      //   for (var student in students) {
-      //     print("Team Name: ${student.teamName}, Member: ${student.member}");
-      //   }
-      // }
       return studentdetails;
     } catch (ex) {
       if (kDebugMode) {
         print(ex.toString());
       }
       rethrow; // Rethrow the exception to propagate it
+    }
+  }
+
+  Future<void> sendPostcheck() async {
+    // Replace with your actual URL
+    final response = await http.post(
+      Uri.parse("https://mzcet.in/techquest23/QuizApi/user/login.php"),
+      body: {
+        'teamname': "Herosaravanan",
+      }, // Replace '1' with the actual techquest_id you want to update
+    );
+
+    if (response.statusCode == 200) {
+      // final data = json.decode(response.body);
+      if (kDebugMode) {
+        print('Success: ${response.body}');
+      }
+    } else {
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
     }
   }
 
@@ -225,7 +242,9 @@ class _EntryState extends State<Entry> {
                       child: MaterialButton(
                         color: const Color.fromARGB(255, 77, 45, 111),
                         onPressed: () {
-                          setState(() {});
+                          setState(() {
+                            // sendPostcheck();
+                          });
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -337,6 +356,17 @@ class _EntryState extends State<Entry> {
                           if (kDebugMode) {
                             print(stu.screenShot.toString());
                           }
+
+                          if (kDebugMode) {
+                            print(stu.verification);
+                          }
+                          if (stu.verification == null ||
+                              stu.verification == "null") {
+                            verification = true;
+                          } else {
+                            verification = false;
+                          }
+
                           return Column(
                             children: [
                               SizedBox(
@@ -522,8 +552,10 @@ class _EntryState extends State<Entry> {
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(20.0))),
-                                        color: const Color.fromARGB(
-                                            255, 77, 45, 111),
+                                        color: verification
+                                            ? const Color.fromARGB(
+                                                255, 77, 45, 111)
+                                            : Colors.green,
                                         onPressed: () {
                                           SendEvent(
                                             stu.knowlegdeBowl,
@@ -535,6 +567,7 @@ class _EntryState extends State<Entry> {
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder: (context) => Detail(
+                                                  Email: stu.email,
                                                   EventList: Event,
                                                   CollegeName: stu.collegeName
                                                       .toString(),

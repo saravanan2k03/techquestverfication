@@ -143,7 +143,7 @@ class _DrawerPageState extends State<DrawerPage> {
                     ),
                     child: Center(
                       child: Text(
-                        'MARK ALLOTMENT',
+                        'ASSIGN MARK',
                         style: GoogleFonts.poppins(
                             color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: 20,

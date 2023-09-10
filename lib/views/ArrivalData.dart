@@ -21,6 +21,7 @@ class _ArrivalDataState extends State<ArrivalData> {
   List<arrival> students = [];
   List<dynamic> searchstudent = [];
   String url = "https://mzcet.in/techquest23/api/Allow.php";
+  String check = "https://mzcet.in/techquest23/QuizApi/user/loginstatus.php";
   String searchvalue = "";
   String dropdownvalue = 'Choose Event';
   var items = [
@@ -416,8 +417,8 @@ class _ArrivalDataState extends State<ArrivalData> {
                                 ];
                                 data.add(temp);
                               }
-                              final pdfFile = await PdfApi.generateTable(
-                                  data, header, formattedDate);
+                              final pdfFile = await PdfApi.generateTable(data,
+                                  header, formattedDate, "ARRIVALREPORT.pdf");
 
                               // Open the saved PDF file
                               await PdfApi.openFile(pdfFile);

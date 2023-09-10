@@ -330,7 +330,7 @@ class _MarkDataState extends State<MarkData> {
                                 data.add(temp);
                               }
                               final pdfFile = await PdfApi.generateTable(
-                                  data, header, formattedDate);
+                                  data, header, formattedDate, "EVENTMARK.pdf");
 
                               // Open the saved PDF file
                               await PdfApi.openFile(pdfFile);

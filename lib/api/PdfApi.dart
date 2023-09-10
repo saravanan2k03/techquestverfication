@@ -5,14 +5,14 @@ import 'package:pdf/pdf.dart';
 import 'package:open_file/open_file.dart';
 
 class PdfApi {
-  static Future<File> generateTable(
-      List<List<dynamic>> dataReport, var header, String date) async {
+  static Future<File> generateTable(List<List<dynamic>> dataReport, var header,
+      String date, String Name) async {
     final pdf = pw.Document();
     // Create the PDF content using the provided dataReport
     await createPdfContent(pdf, dataReport, header, date);
 
     // Save the PDF document
-    return saveDocument(name: 'Report.pdf', pdf: pdf);
+    return saveDocument(name: Name, pdf: pdf);
   }
 
   static Future<File> saveDocument({

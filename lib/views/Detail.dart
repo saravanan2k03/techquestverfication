@@ -17,6 +17,7 @@ class Detail extends StatefulWidget {
   final TeamMembertwo;
   final Screenshot;
   final verification;
+  final Email;
   final List<dynamic> EventList;
   const Detail({
     super.key,
@@ -28,7 +29,7 @@ class Detail extends StatefulWidget {
     this.TeamMemberone,
     this.TeamMembertwo,
     this.Screenshot,
-    this.verification,
+    this.verification, this.Email,
   });
 
   @override
@@ -435,6 +436,52 @@ class _DetailState extends State<Detail> {
                                       ),
                                     )
                                   ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 10, bottom: 10),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.55,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        // color: Colors.red,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.10,
+                                        child: Text(
+                                          "EMAIL ID:",
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        // color: Colors.red,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.40,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 10),
+                                          child: Text(
+                                            widget.Email,
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
