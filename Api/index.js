@@ -10,21 +10,60 @@ const apiport = 8080;
 
 try {
 
-  app.post("/add", (req, res) => {
-    try {
-      if (!req.body) {
-        return res.status(400).send("Request body is missing");
-      } else {
-        console.log(req.body.time)
-        console.log(req.body.user)
-        console.log(req.body.qr)
-        for (let i = 0; i < req.body.time?.length ?? 0; i++) {
-          for (let j = 0; j < req.body.user?.length ?? 0; j++) {
-            console.log(req.body.time[i])
-            console.log(req.body.user[j])
-            console.log(req.body.qr[j])
+  // app.post("/add", (req, res) => {
+  //   try {
+  //     if (!req.body) {
+  //       return res.status(400).send("Request body is missing");
+  //     } else {
+  //       let sympo_users= req.body.user.toString().split(";");
+  //       let sympo_qr= req.body.qr.toString().split(";");
+        
+  //         for (let j = 0; j < sympo_users?.length ?? 0; j++) {
+            
+  //           RequestDatabase.query(
+  //             "INSERT INTO sympo (TeamId, StudentName, Qrcode, Morning, AfterNoon) VALUES ('" + req.body.teamid + "','" + sympo_users[j] + "','" + sympo_qr[j] + "','True','True')",
+  //             (err, result) => {
+  //               if (err) {
+  //                 console.log(err);
+  //                  res.status(500).send("Error");
+  //               } else {
+  //                console.log("OK");
+  //               }
+  //             }
+  //           );
+  //         }
+  
+
+  //       res.send("success");
+  //     }
+  //   } catch (error) {
+  //     res.send(error.message);
+  //   }
+ 
+   
+  // });
+
+
+
+  app.post("/addstudent", (req, res) => {
+    if (!req.body) {
+      return res.status(400).send("Request body is missing");
+    }
+    RequestDatabase.query("select * from sympo where  TeamID='"+req.body.teamid+"'",(err,result)=>{
+      if(err){
+        console.log(err);
+      }
+      else{
+       if( result["recordset"].length!=0){
+        res.send("Already Exist");
+       }
+       else{
+        let sympo_users= req.body.user.toString().split(";");
+        let sympo_qr= req.body.qr.toString().split(";");
+        
+          for (let j = 0; j < sympo_users?.length ?? 0; j++) {
             RequestDatabase.query(
-              "INSERT INTO Sympo (TeamId, StudentName, Qrcode, Date, Time,Getting) VALUES ('" + req.body.teamid + "','" + req.body.user[j] + "','" + req.body.qr[j] + "','" + req.body.date + "','" + req.body.time[i] + "','NotGetting')",
+              "INSERT INTO sympo (TeamId, StudentName, Qrcode, Morning, AfterNoon) VALUES ('" + req.body.teamid + "','" + sympo_users[j] + "','" + sympo_qr[j] + "','True','True')",
               (err, result) => {
                 if (err) {
                   console.log(err);
@@ -35,19 +74,15 @@ try {
               }
             );
           }
-  
-        }
         res.send("success");
+       }
       }
-    } catch (error) {
-      res.send(error.message);
-    }
- 
-   
+    })
+      
   });
 
   app.get('/Get', (req, res) => {
-    RequestDatabase.query("select * from Sympo").then(function (recordset) {
+    RequestDatabase.query("select * from sympo").then(function (recordset) {
       res.send(recordset)
     })
   });

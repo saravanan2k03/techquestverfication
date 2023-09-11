@@ -29,7 +29,8 @@ class Detail extends StatefulWidget {
     this.TeamMemberone,
     this.TeamMembertwo,
     this.Screenshot,
-    this.verification, this.Email,
+    this.verification,
+    this.Email,
   });
 
   @override
@@ -42,9 +43,11 @@ class _DetailState extends State<Detail> {
   String arrival = "https://mzcet.in/techquest23/api/arrival.php";
   List<String> student = [];
   List<String> EventList = [];
-  List<dynamic> user = [];
-  List<dynamic> qrcode = [];
-  List<dynamic> time = ["10:40", "12:30"];
+  List<String> qrcode = [];
+  List<dynamic> time = [1040, 1230];
+  final TeamLeader = TextEditingController();
+  final Member1 = TextEditingController();
+  final Member2 = TextEditingController();
   Future<void> sendPostRequest() async {
     // Replace with your actual URL
     final response = await http.post(
@@ -89,7 +92,12 @@ class _DetailState extends State<Detail> {
       if (data['success'] == false) {
         customshowAlertDialog('Error', 'Student Has Been Already Added ');
       } else {
-        customshowAlertDialog('success', 'Student Has Been Added Successfully');
+        Addref(widget.TeamId).whenComplete(
+          () {
+            customshowAlertDialog(
+                'success', 'Student Has Been Added Successfully');
+          },
+        );
       }
     } else {
       customshowAlertDialog(
@@ -100,22 +108,38 @@ class _DetailState extends State<Detail> {
     }
   }
 
-  Addref(String teamid) async {
+  Future AddQr() async {
+    qrcode = [];
+    if (TeamLeader.text.isNotEmpty) {
+      qrcode.add(TeamLeader.text.toString());
+    }
+    if (Member1.text.isNotEmpty) {
+      qrcode.add(Member1.text.toString());
+    }
+    if (Member2.text.isNotEmpty) {
+      qrcode.add(Member2.text.toString());
+    }
+    if (kDebugMode) {
+      print("qrcode:$qrcode");
+    }
+  }
+
+  Future Addref(String teamid) async {
+    await AddQr();
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://mzcet.in/techquest23/api/arrivalreturnwhereorder.php'),
+        Uri.parse('http://localhost:8080/addstudent'),
         body: {
-          'user': user,
-          'qr': qrcode,
+          'user': student.join(';'),
+          'qr': qrcode.join(';'),
           "teamid": teamid,
-          "date": "15-09-2023",
-          "time": time,
-          "getting": "Not Get"
         },
       );
 
       if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print(response.body);
+        }
       } else {
         if (kDebugMode) {
           print("Error");
@@ -136,7 +160,7 @@ class _DetailState extends State<Detail> {
       EventList.add(element);
     }
     if (widget.TeamLeader != "") {
-      student.add(widget.TeamLeader);
+      student.add(widget.TeamLeader.toString());
       if (kDebugMode) {
         print("TeamLeader Not Empty");
       }
@@ -146,7 +170,7 @@ class _DetailState extends State<Detail> {
       }
     }
     if (widget.TeamMemberone != "") {
-      student.add(widget.TeamMemberone);
+      student.add(widget.TeamMemberone.toString());
 
       if (kDebugMode) {
         print("TeamMemberone Not Empty");
@@ -157,7 +181,7 @@ class _DetailState extends State<Detail> {
       }
     }
     if (widget.TeamMembertwo != "") {
-      student.add(widget.TeamMembertwo);
+      student.add(widget.TeamMembertwo.toString());
       if (kDebugMode) {
         print("Not Empty");
       }
@@ -581,8 +605,9 @@ class _DetailState extends State<Detail> {
                                                     .size
                                                     .width *
                                                 0.10,
-                                            child: const TextField(
-                                              decoration: InputDecoration(
+                                            child: TextField(
+                                              controller: TeamLeader,
+                                              decoration: const InputDecoration(
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
@@ -656,8 +681,9 @@ class _DetailState extends State<Detail> {
                                                     .size
                                                     .width *
                                                 0.10,
-                                            child: const TextField(
-                                              decoration: InputDecoration(
+                                            child: TextField(
+                                              controller: Member1,
+                                              decoration: const InputDecoration(
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
@@ -728,8 +754,9 @@ class _DetailState extends State<Detail> {
                                                     .size
                                                     .width *
                                                 0.10,
-                                            child: const TextField(
-                                              decoration: InputDecoration(
+                                            child: TextField(
+                                              controller: Member2,
+                                              decoration: const InputDecoration(
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
