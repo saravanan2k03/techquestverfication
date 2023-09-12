@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:techquest/api/getstorageapi.dart';
+import 'package:techquest/views/ArrivalScreen.dart';
+import 'package:techquest/views/HomeScreen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,14 +15,62 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var username;
-  var password;
   // "admin";
   // "Mount@1234";
   // "codinator";
   // "Techquest@2023"
   final user = TextEditingController();
   final pwd = TextEditingController();
+
+  Future<void> customshowAlertDialog(String tittle, String content) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          title: Text(
+            tittle,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: const Color.fromARGB(255, 77, 45, 111),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  content,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,7 +183,41 @@ class _LoginPageState extends State<LoginPage> {
                             width: MediaQuery.of(context).size.width * 0.15,
                             child: MaterialButton(
                               color: const Color.fromARGB(255, 77, 45, 111),
-                              onPressed: () {},
+                              onPressed: () {
+                                if (user.text.isEmpty || pwd.text.isEmpty) {
+                                  customshowAlertDialog("Warning",
+                                      "Please Enter UserName or Password!");
+                                } else {
+                                  if (user.text == "admin" &&
+                                      pwd.text == "Mount@1234") {
+                                    box
+                                        .write('usertype', 'admin')
+                                        .whenComplete(() {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const HomeScreen()),
+                                      );
+                                    });
+                                  } else if (user.text == "codinator" &&
+                                      pwd.text == "Techquest@2023") {
+                                    box
+                                        .write('usertype', 'co')
+                                        .whenComplete(() {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ArrivalPage()),
+                                      );
+                                    });
+                                  } else {
+                                    customshowAlertDialog("Warning",
+                                        "Please Make Sure Your UserName or Password!");
+                                  }
+                                }
+                              },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 10),

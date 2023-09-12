@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'views/LoginPage.dart';
+import 'package:techquest/views/LoginPage.dart';
 
 void main() async {
   await GetStorage.init();

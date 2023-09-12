@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techquest/views/ArrivalScreen.dart';
 import 'package:techquest/views/FinalizeScreen.dart';
+import 'package:techquest/views/LoginPage.dart';
 import 'package:techquest/views/MarkScreen.dart';
 
+import '../api/getstorageapi.dart';
 import '../views/HomeScreen.dart';
 
 class DrawerPage extends StatefulWidget {
@@ -15,6 +17,16 @@ class DrawerPage extends StatefulWidget {
 
 class _DrawerPageState extends State<DrawerPage> {
   bool login = false;
+  @override
+  void initState() {
+    if (box.read("usertype") == "admin") {
+      login = true;
+    } else if (box.read("usertype") == "co") {
+      login = false;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -39,39 +51,42 @@ class _DrawerPageState extends State<DrawerPage> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.40,
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * .05,
-                    width: MediaQuery.of(context).size.width * 0.15,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(61, 23, 24, 25)
-                              .withOpacity(0.3),
-                          spreadRadius: 0,
-                          blurRadius: 12,
-                          offset: const Offset(0, 2),
+              Visibility(
+                visible: login,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * .05,
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(61, 23, 24, 25)
+                                .withOpacity(0.3),
+                            spreadRadius: 0,
+                            blurRadius: 12,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          'ENTRY',
+                          style: GoogleFonts.poppins(
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600),
                         ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        'ENTRY',
-                        style: GoogleFonts.poppins(
-                            color: const Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -182,6 +197,46 @@ class _DrawerPageState extends State<DrawerPage> {
                     child: Center(
                       child: Text(
                         'Final Mark',
+                        style: GoogleFonts.poppins(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  box.remove("usertype").whenComplete(() {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * .05,
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(61, 23, 24, 25)
+                              .withOpacity(0.3),
+                          spreadRadius: 0,
+                          blurRadius: 12,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        'LOGOUT',
                         style: GoogleFonts.poppins(
                             color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: 20,
