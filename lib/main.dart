@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'views/HomeScreen.dart';
+import 'package:get_storage/get_storage.dart';
+import 'views/LoginPage.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
   runApp(const MyApp());
 }
 
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const LoginPage(),
     );
   }
 }

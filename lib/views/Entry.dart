@@ -38,7 +38,7 @@ class _EntryState extends State<Entry> {
         List<StudentDetails> studentdetails =
             student.map((stu) => StudentDetails.fromJson(stu)).toList();
         if (kDebugMode) {
-          print(student);
+          print(studentdetails.length);
         }
         return studentdetails;
       } else {
@@ -170,486 +170,575 @@ class _EntryState extends State<Entry> {
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 20, left: 30),
-              child: Container(
-                height: MediaQuery.of(context).size.height * .15,
-                width: MediaQuery.of(context).size.width * 0.80,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color:
-                          const Color.fromARGB(61, 23, 24, 25).withOpacity(0.3),
-                      spreadRadius: 0,
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        width: MediaQuery.of(context).size.width * 0.20,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(61, 23, 24, 25)
-                                  .withOpacity(0.3),
-                              spreadRadius: 0,
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Center(
-                            child: TextFormField(
-                              initialValue: searchvalue,
-                              onChanged: (value) {
-                                setState(() {
-                                  searchvalue = value;
-                                });
-
-                                if (kDebugMode) {
-                                  print("search:$value");
-                                }
-                                if (kDebugMode) {
-                                  print(searchvalue);
-                                }
-                              },
-                              cursorColor:
-                                  const Color.fromARGB(255, 19, 21, 21),
-                              decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  prefixIcon: Icon(Icons.search_sharp),
-                                  suffixIcon: Icon(Icons.more_vert_outlined),
-                                  hoverColor: Color.fromARGB(255, 89, 90, 91),
-                                  hintText: "search"),
-                            ),
+        child: FutureBuilder(
+            future: studentsFuture,
+            builder: (context, snapshot) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, left: 30),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * .15,
+                      width: MediaQuery.of(context).size.width * 0.80,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(61, 23, 24, 25)
+                                .withOpacity(0.3),
+                            spreadRadius: 0,
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
+                        ],
                       ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.06,
-                      width: MediaQuery.of(context).size.width * 0.15,
-                      child: MaterialButton(
-                        color: const Color.fromARGB(255, 77, 45, 111),
-                        onPressed: () async {
-                          List<List<dynamic>> data = [];
-                          DateTime currentDate = DateTime.now();
-                          var todaydate = currentDate.toUtc().toString();
-                          final utcTimestamp = DateTime.parse(todaydate);
-                          final formattedDate =
-                              DateFormat.yMMMd().format(utcTimestamp);
-                          final header = [
-                            'TEAM ID',
-                            'TEAM NAME',
-                            'TEAM LEADER',
-                            'COLLEGE NAME',
-                            'EMAIL',
-                            'VERIFICATION'
-                          ];
-                          for (var element in student) {
-                            List temp = [
-                              element['techquest_id'],
-                              element['TeamName'],
-                              element['TeamLeader'],
-                              element['CollegeName'],
-                              element['Email'],
-                              element['verification']
-                            ];
-                            data.add(temp);
-                          }
-                          final pdfFile = await PdfApi.generateTable(
-                              data, header, formattedDate, "ENTRYREPORT.pdf");
-
-                          // Open the saved PDF file
-                          await PdfApi.openFile(pdfFile);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
-                          child: Text(
-                            "EXPORT PDF",
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.06,
-                        width: MediaQuery.of(context).size.width * 0.15,
-                        child: MaterialButton(
-                          color: const Color.fromARGB(255, 77, 45, 111),
-                          onPressed: () {
-                            setState(() {
-                              ApiCall();
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            child: Text(
-                              "REFRESH",
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 20),
+                              width: MediaQuery.of(context).size.width * 0.20,
+                              decoration: BoxDecoration(
                                 color: const Color.fromARGB(255, 255, 255, 255),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color.fromARGB(61, 23, 24, 25)
+                                        .withOpacity(0.3),
+                                    spreadRadius: 0,
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Center(
+                                  child: TextFormField(
+                                    initialValue: searchvalue,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        searchvalue = value;
+                                      });
+
+                                      if (kDebugMode) {
+                                        print("search:$value");
+                                      }
+                                      if (kDebugMode) {
+                                        print(searchvalue);
+                                      }
+                                    },
+                                    cursorColor:
+                                        const Color.fromARGB(255, 19, 21, 21),
+                                    decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        prefixIcon: Icon(Icons.search_sharp),
+                                        suffixIcon:
+                                            Icon(Icons.more_vert_outlined),
+                                        hoverColor:
+                                            Color.fromARGB(255, 89, 90, 91),
+                                        hintText: "search"),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20, left: 30),
-              child: Container(
-                height: MediaQuery.of(context).size.height * .80,
-                width: MediaQuery.of(context).size.width * 0.80,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color:
-                          const Color.fromARGB(61, 23, 24, 25).withOpacity(0.3),
-                      spreadRadius: 0,
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: FutureBuilder<List<StudentDetails>>(
-                  future: studentsFuture, // Use the future containing your data
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox(
-                        height: 100,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(child: CircularProgressIndicator()),
-                          ],
-                        ),
-                      ); // Show a loading indicator while data is loading
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const SizedBox(
-                          height: 100,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('No data available.'),
-                            ],
-                          ));
-                    } else {
-                      // teamcheck();
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data!
-                            .where((element) => element.teamName
-                                .toString()
-                                .toLowerCase()
-                                .contains(searchvalue.toLowerCase()))
-                            .length,
-                        itemBuilder: (context, index) {
-                          var stu = snapshot.data!
-                              .where((element) => element.teamName
-                                  .toString()
-                                  .toLowerCase()
-                                  .contains(searchvalue.toLowerCase()))
-                              .toList()[index];
-                          if (kDebugMode) {
-                            print("enter");
-                          }
-                          if (kDebugMode) {
-                            print(stu.screenShot.toString());
-                          }
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.06,
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: MaterialButton(
+                              color: const Color.fromARGB(255, 77, 45, 111),
+                              onPressed: () async {
+                                List<List<dynamic>> data = [];
+                                DateTime currentDate = DateTime.now();
+                                var todaydate = currentDate.toUtc().toString();
+                                final utcTimestamp = DateTime.parse(todaydate);
+                                final formattedDate =
+                                    DateFormat.yMMMd().format(utcTimestamp);
+                                final header = [
+                                  'TEAM ID',
+                                  'TEAM NAME',
+                                  'TEAM LEADER',
+                                  'COLLEGE NAME',
+                                  'EMAIL',
+                                  'VERIFICATION'
+                                ];
+                                for (var element in student) {
+                                  List temp = [
+                                    element['techquest_id'],
+                                    element['TeamName'],
+                                    element['TeamLeader'],
+                                    element['CollegeName'],
+                                    element['Email'],
+                                    element['verification']
+                                  ];
+                                  data.add(temp);
+                                }
+                                final pdfFile = await PdfApi.generateTable(data,
+                                    header, formattedDate, "ENTRYREPORT.pdf");
 
-                          if (kDebugMode) {
-                            print(stu.verification);
-                          }
-                          if (stu.verification == null ||
-                              stu.verification == "null") {
-                            verification = true;
-                          } else {
-                            verification = false;
-                          }
-
-                          return Column(
-                            children: [
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.05,
-                              ),
-                              Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.17,
-                                width: MediaQuery.of(context).size.width * 0.70,
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 254, 254, 254),
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          const Color.fromARGB(61, 23, 24, 25)
-                                              .withOpacity(0.3),
-                                      spreadRadius: 0,
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
+                                // Open the saved PDF file
+                                await PdfApi.openFile(pdfFile);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                child: Text(
+                                  "EXPORT PDF",
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: const Color.fromARGB(
+                                        255, 255, 255, 255),
+                                  ),
                                 ),
-                                child: Row(
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.06,
+                              width: MediaQuery.of(context).size.width * 0.15,
+                              child: MaterialButton(
+                                color: const Color.fromARGB(255, 77, 45, 111),
+                                onPressed: () {
+                                  setState(() {
+                                    ApiCall();
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  child: Text(
+                                    "REFRESH",
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.06,
+                                width: MediaQuery.of(context).size.width * 0.15,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 05),
+                                  child: Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Text(
+                                        "TOTAL REGISTRATION :",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        "${student.length}",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, left: 30),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * .80,
+                      width: MediaQuery.of(context).size.width * 0.80,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(61, 23, 24, 25)
+                                .withOpacity(0.3),
+                            spreadRadius: 0,
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: FutureBuilder<List<StudentDetails>>(
+                        future:
+                            studentsFuture, // Use the future containing your data
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox(
+                              height: 100,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(child: CircularProgressIndicator()),
+                                ],
+                              ),
+                            ); // Show a loading indicator while data is loading
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const SizedBox(
+                                height: 100,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.13,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.07,
-                                        decoration: BoxDecoration(
-                                          color: const Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color.fromARGB(
-                                                      61, 23, 24, 25)
-                                                  .withOpacity(0.3),
-                                              spreadRadius: 0,
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: imgefunc(
-                                              stu.screenShot.toString()),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 10),
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.5,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 10),
-                                                    child: Text(
-                                                      "${stu.collegeName}",
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.5,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Team Name:",
-                                                    style: GoogleFonts.poppins(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 13,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 10),
-                                                    child: Text(
-                                                      "${stu.teamName}",
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.5,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Team Leader:",
-                                                    style: GoogleFonts.poppins(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 13,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 05),
-                                                    child: Text(
-                                                      "${stu.teamLeader}",
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    Text('No data available.'),
+                                  ],
+                                ));
+                          } else {
+                            // teamcheck();
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: snapshot.data!
+                                  .where((element) => element.teamName
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(searchvalue.toLowerCase()))
+                                  .length,
+                              itemBuilder: (context, index) {
+                                var stu = snapshot.data!
+                                    .where((element) => element.teamName
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(searchvalue.toLowerCase()))
+                                    .toList()[index];
+                                if (kDebugMode) {
+                                  print("enter");
+                                }
+                                if (kDebugMode) {
+                                  print(stu.screenShot.toString());
+                                }
+
+                                if (kDebugMode) {
+                                  print(stu.verification);
+                                }
+                                if (stu.verification == null ||
+                                    stu.verification == "null") {
+                                  verification = true;
+                                } else {
+                                  verification = false;
+                                }
+
+                                return Column(
+                                  children: [
                                     SizedBox(
                                       height:
                                           MediaQuery.of(context).size.height *
-                                              0.06,
+                                              0.05,
+                                    ),
+                                    Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.17,
                                       width: MediaQuery.of(context).size.width *
-                                          0.09,
-                                      child: MaterialButton(
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0))),
-                                        color: verification
-                                            ? const Color.fromARGB(
-                                                255, 77, 45, 111)
-                                            : Colors.green,
-                                        onPressed: () {
-                                          SendEvent(
-                                            stu.knowlegdeBowl,
-                                            stu.quizardry,
-                                            stu.techVein,
-                                            stu.designUp,
-                                            stu.codeLog,
-                                          ).whenComplete(() {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) => Detail(
-                                                  Email: stu.email,
-                                                  EventList: Event,
-                                                  CollegeName: stu.collegeName
-                                                      .toString(),
-                                                  Screenshot: stu.screenShot,
-                                                  TeamId: stu.techquestId
-                                                      .toString(),
-                                                  TeamLeader:
-                                                      stu.teamLeader.toString(),
-                                                  TeamMemberone:
-                                                      stu.memberone.toString(),
-                                                  TeamMembertwo:
-                                                      stu.memberTwo.toString(),
-                                                  TeamName:
-                                                      stu.teamName.toString(),
-                                                  verification: stu.verification
-                                                      .toString(),
-                                                ),
+                                          0.70,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromARGB(
+                                            255, 254, 254, 254),
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color.fromARGB(
+                                                    61, 23, 24, 25)
+                                                .withOpacity(0.3),
+                                            spreadRadius: 0,
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.13,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.07,
+                                              decoration: BoxDecoration(
+                                                color: const Color.fromARGB(
+                                                    255, 255, 255, 255),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: const Color.fromARGB(
+                                                            61, 23, 24, 25)
+                                                        .withOpacity(0.3),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
                                               ),
-                                            );
-                                          });
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 10),
-                                          child: Text(
-                                            "VIEW",
-                                            style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13,
-                                              color: const Color.fromARGB(
-                                                  255, 255, 255, 255),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: imgefunc(
+                                                    stu.screenShot.toString()),
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 10),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 10),
+                                                          child: Text(
+                                                            "${stu.collegeName}",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 13,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "Team Name:",
+                                                          style: GoogleFonts
+                                                              .poppins(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 13,
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 10),
+                                                          child: Text(
+                                                            "${stu.teamName}",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 13,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "Team Leader:",
+                                                          style: GoogleFonts
+                                                              .poppins(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 13,
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 05),
+                                                          child: Text(
+                                                            "${stu.teamLeader}",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 13,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.06,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.09,
+                                            child: MaterialButton(
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  20.0))),
+                                              color: verification
+                                                  ? const Color.fromARGB(
+                                                      255, 77, 45, 111)
+                                                  : Colors.green,
+                                              onPressed: () {
+                                                SendEvent(
+                                                  stu.knowlegdeBowl,
+                                                  stu.quizardry,
+                                                  stu.techVein,
+                                                  stu.designUp,
+                                                  stu.codeLog,
+                                                ).whenComplete(() {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Detail(
+                                                        Email: stu.email,
+                                                        EventList: Event,
+                                                        CollegeName: stu
+                                                            .collegeName
+                                                            .toString(),
+                                                        Screenshot:
+                                                            stu.screenShot,
+                                                        TeamId: stu.techquestId
+                                                            .toString(),
+                                                        TeamLeader: stu
+                                                            .teamLeader
+                                                            .toString(),
+                                                        TeamMemberone: stu
+                                                            .memberone
+                                                            .toString(),
+                                                        TeamMembertwo: stu
+                                                            .memberTwo
+                                                            .toString(),
+                                                        TeamName: stu.teamName
+                                                            .toString(),
+                                                        verification: stu
+                                                            .verification
+                                                            .toString(),
+                                                      ),
+                                                    ),
+                                                  );
+                                                });
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10,
+                                                        horizontal: 10),
+                                                child: Text(
+                                                  "VIEW",
+                                                  style: GoogleFonts.poppins(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13,
+                                                    color: const Color.fromARGB(
+                                                        255, 255, 255, 255),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
                                     )
                                   ],
-                                ),
-                              )
-                            ],
-                          );
+                                );
+                              },
+                            );
+                          }
                         },
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
       ),
     );
   }
